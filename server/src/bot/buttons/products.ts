@@ -37,7 +37,7 @@ const button: Exported<[user: string | null, current: number, type: PaginateType
 								data[0].summary,
 								'',
 								'**Purchase**',
-								...data.map((product) =>
+								...data.filter((product) => product.name === data[0].name).map((product) =>
 									`[${ctx.database.properCaseProvider(product.provider!)}](<${product.link}>) - \`${parseFloat(product.price!).toFixed(2)} ${product.currency}\``
 								)
 							))

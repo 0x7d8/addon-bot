@@ -86,7 +86,6 @@ export default new Command()
 							}).from(ctx.database.schema.products)
 								.leftJoin(ctx.database.schema.productProviders, eq(ctx.database.schema.products.id, ctx.database.schema.productProviders.productId))
 								.orderBy(ctx.database.schema.products.id)
-								.offset(0)
 								.limit(ctx.database.schema.productProvider.enumValues.length),
 							ctx.database.select({
 								count: count(ctx.database.schema.products.id)
@@ -104,7 +103,7 @@ export default new Command()
 										products[0].summary,
 										'',
 										'**Purchase**',
-										...products.map((product) =>
+										...products.filter((product) => product.name === products[0].name).map((product) =>
 											`[${ctx.database.properCaseProvider(product.provider!)}](<${product.link}>) - \`${parseFloat(product.price!).toFixed(2)} ${product.currency}\``
 										)
 									))
@@ -124,7 +123,6 @@ export default new Command()
 								.leftJoin(ctx.database.schema.productLinks, eq(ctx.database.schema.products.id, ctx.database.schema.productLinks.productId))
 								.where(eq(ctx.database.schema.productLinks.discordId, ctx.interaction.user.id))
 								.orderBy(ctx.database.schema.products.id)
-								.offset(0)
 								.limit(1),
 							ctx.database.select({
 								count: count(ctx.database.schema.products.id)
@@ -134,7 +132,10 @@ export default new Command()
 								.then((r) => r[0].count)
 						])
 
-						if (!total) return ctx.interaction.reply('`🔗` No Products linked.')
+						if (total < 1) return ctx.interaction.reply({
+							ephemeral: true,
+							content: '`🔗` No Products linked.'
+						})
 
 						return ctx.interaction.reply({
 							embeds: [
