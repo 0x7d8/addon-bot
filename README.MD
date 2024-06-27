@@ -12,5 +12,5 @@ registry.infra.rjns.dev/robert/addon-bot:latest
 
 <br>
 
-#### /app/.env
+#### /app/server/.env
 ##### The Environment File to load for the bot
