@@ -1,0 +1,23 @@
+{
+  "compilerOptions": {
+    "strict": true,
+    "baseUrl": ".",
+    "module": "CommonJS",
+    "lib": ["ES2023", "DOM"],
+    "pretty": true,
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
+    "declaration": false,
+    "esModuleInterop": true,
+    "target": "ES2022",
+    "outDir": "lib",
+    "paths": {
+      "@/*": ["./src/*"],
+      "@translations/*": ["./translations/translations/*"]
+    }
+  },
+  "include": [
+    "src/**/*",
+    "translations/**/*"
+  ]
+}
