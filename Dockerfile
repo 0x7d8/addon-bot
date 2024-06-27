@@ -35,7 +35,8 @@ RUN apt update && \
 
 RUN npm i -g pnpm --force
 
-COPY ./server/package.json /app/server/package.json
+COPY --from=builder-server /app/server/node_modules /app/server/node_modules
+COPY --from=builder-server /app/server/lib /app/server
 
 COPY ./.git /app/.git
 
