@@ -38,6 +38,7 @@ export default new Modal()
 
 		const products = await ctx.database.select({
 			id: ctx.database.schema.products.id,
+			name: ctx.database.schema.products.name,
 			role: ctx.database.schema.products.role,
 			productProviderId: ctx.database.schema.productProviders.id,
 			productProviderProductId: ctx.database.schema.productProviders.productProviderId
@@ -67,7 +68,7 @@ export default new Modal()
 					.then((member) => ctx.env.CUSTOMER_ROLE ? member.roles.add(ctx.env.CUSTOMER_ROLE) : null)
 			])
 
-			return ctx.interaction.editReply('`🔗` Purchase linked successfully.')
+			return ctx.interaction.editReply(`\`🔗\` Purchase linked to **${products[i].name}**`)
 		}
 
 		return ctx.interaction.reply({

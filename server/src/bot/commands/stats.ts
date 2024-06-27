@@ -31,12 +31,12 @@ export default new Command()
 						},
 						{
 							name: '`💶` Total Price',
-							value: `\`${parseFloat(products.sum ?? '0').toFixed(2)}€\``,
+							value: `\`${parseFloat(products.sum ?? '0').toFixed(2)} EUR\``,
 							inline: true
 						},
 						{
 							name: '`💰` Average Price',
-							value: `\`${parseFloat(products.average ?? '0').toFixed(2)}€\``,
+							value: `\`${parseFloat(products.average ?? '0').toFixed(2)} EUR\``,
 							inline: true
 						}
 					])
