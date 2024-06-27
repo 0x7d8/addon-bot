@@ -3,10 +3,10 @@ import { z } from "zod"
 
 let env: Record<string, string | undefined>
 try {
-	env = filesystem.env('../.env', { async: false })
+	env = filesystem.env('./.env', { async: false })
 } catch {
 	try {
-		env = filesystem.env('../../.env', { async: false })
+		env = filesystem.env('../.env', { async: false })
 	} catch {
 		env = process.env
 	}
