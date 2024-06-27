@@ -61,7 +61,7 @@ const button: Exported<[user: string | null, current: number, type: PaginateType
 				}).from(ctx.database.schema.products)
 					.leftJoin(ctx.database.schema.productLinks, eq(ctx.database.schema.products.id, ctx.database.schema.productLinks.productId))
 					.where(eq(ctx.database.schema.productLinks.discordId, user))
-					.orderBy(ctx.database.schema.productLinks.created)
+					.orderBy(ctx.database.schema.products.id)
 					.offset(skip)
 					.limit(take),
 					1

@@ -123,7 +123,7 @@ export default new Command()
 							}).from(ctx.database.schema.products)
 								.leftJoin(ctx.database.schema.productLinks, eq(ctx.database.schema.products.id, ctx.database.schema.productLinks.productId))
 								.where(eq(ctx.database.schema.productLinks.discordId, ctx.interaction.user.id))
-								.orderBy(ctx.database.schema.productLinks.created)
+								.orderBy(ctx.database.schema.products.id)
 								.offset(0)
 								.limit(1),
 							ctx.database.select({
@@ -133,6 +133,8 @@ export default new Command()
 								.where(eq(ctx.database.schema.productLinks.discordId, ctx.interaction.user.id))
 								.then((r) => r[0].count)
 						])
+
+						if (!total) return ctx.interaction.reply('`🔗` No Products linked.')
 
 						return ctx.interaction.reply({
 							embeds: [
