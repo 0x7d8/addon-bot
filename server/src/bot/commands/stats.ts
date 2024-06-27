@@ -20,7 +20,6 @@ export default new Command()
 			.then((r) => r[0])
 
 		return ctx.interaction.reply({
-			ephemeral: true,
 			embeds: [
 				ctx.Embed()
 					.setTitle('`📈` Statistics')
