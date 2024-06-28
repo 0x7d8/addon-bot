@@ -19,6 +19,11 @@ export default new Command()
 			.addSubcommand((command) => command
 				.setName('linked')
 				.setDescription('List your linked products')
+				.addUserOption((option) => option
+					.setName('user')
+					.setDescription('The user to list linked products of')
+					.setRequired(false)
+				)
 			)
 		)
 		.addSubcommandGroup((command) => command
@@ -113,6 +118,8 @@ export default new Command()
 					}
 
 					case "linked": {
+						const user = ctx.interaction.options.getUser('user') ?? ctx.interaction.user
+
 						const [ products, total ] = await Promise.all([
 							ctx.database.select({
 								name: ctx.database.schema.products.name,
@@ -121,14 +128,14 @@ export default new Command()
 								summary: ctx.database.schema.products.summary
 							}).from(ctx.database.schema.products)
 								.leftJoin(ctx.database.schema.productLinks, eq(ctx.database.schema.products.id, ctx.database.schema.productLinks.productId))
-								.where(eq(ctx.database.schema.productLinks.discordId, ctx.interaction.user.id))
+								.where(eq(ctx.database.schema.productLinks.discordId, user.id))
 								.orderBy(ctx.database.schema.products.id)
 								.limit(1),
 							ctx.database.select({
 								count: count(ctx.database.schema.products.id)
 							}).from(ctx.database.schema.products)
 								.leftJoin(ctx.database.schema.productLinks, eq(ctx.database.schema.products.id, ctx.database.schema.productLinks.productId))
-								.where(eq(ctx.database.schema.productLinks.discordId, ctx.interaction.user.id))
+								.where(eq(ctx.database.schema.productLinks.discordId, user.id))
 								.then((r) => r[0].count)
 						])
 
@@ -140,7 +147,7 @@ export default new Command()
 						return ctx.interaction.reply({
 							embeds: [
 								ctx.Embed()
-									.setTitle('`📦` Linked Products')
+									.setTitle(`\`📦\` Linked Products ${user.id !== ctx.interaction.user.id ? `(of ${user.username})` : ''}`.trim())
 									.setImage(products[0].banner)
 									.setThumbnail(products[0].icon)
 									.setDescription(ctx.join(
@@ -148,7 +155,7 @@ export default new Command()
 										products[0].summary
 									))
 									.setFooter({ text: `${total} Products` })
-							], components: ctx.paginateButtons(1, total, (type) => productsButton(ctx.interaction, ctx.interaction.user.id, 1, type), 1)
+							], components: ctx.paginateButtons(1, total, (type) => productsButton(ctx.interaction, user.id, 1, type), 1)
 						})
 					}
 				}

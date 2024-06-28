@@ -29,7 +29,7 @@ const button: Exported<[user: string | null, current: number, type: PaginateType
 				return ctx.interaction.update({
 					embeds: [
 						ctx.Embed()
-							.setTitle('`📦` Products')
+							.setTitle(ctx.interaction.message.embeds[0].title)
 							.setImage(data[0].banner)
 							.setThumbnail(data[0].icon)
 							.setDescription(ctx.join(
@@ -70,7 +70,7 @@ const button: Exported<[user: string | null, current: number, type: PaginateType
 				return ctx.interaction.update({
 					embeds: [
 						ctx.Embed()
-							.setTitle('`📦` Products')
+							.setTitle(ctx.interaction.message.embeds[0].title)
 							.setImage(data[0].banner)
 							.setThumbnail(data[0].icon)
 							.setDescription(ctx.join(
