@@ -32,7 +32,10 @@ export default new Command()
 
 		if (demoAccesses.some((access) => access.created.getTime() > Date.now() - time(1).d())) return ctx.interaction.reply({
 			ephemeral: true,
-			content: '`🔍` You have already requested a demo account in the last 24 hours, please wait or ask in a ticket.'
+			content: ctx.join(
+				'`🔍` You have already requested a demo account in the last 24 hours, please wait or ask in a ticket.',
+				`you can request a new one in <t:${Math.floor((demoAccesses.find((access) => access.created.getTime() > Date.now() - time(1).d())!.created.getTime() + time(1).d()) / 1000)}:R>`
+			)
 		})
 
 		const password = string.generate({
