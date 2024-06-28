@@ -5,6 +5,7 @@ import database from "@/globals/database"
 import env from "@/globals/env"
 import * as git from "@/globals/git"
 import * as sourcexchange from "@/globals/sourcexchange"
+import * as pterodactyl from "@/globals/pterodactyl"
 import { Scope } from "@sentry/node"
 import logger from "@/globals/logger"
 import CustomEmbed from "@/bot/classes/CustomEmbed"
@@ -133,6 +134,10 @@ export default class Context<Interaction extends any, Metadata extends boolean> 
 	 * The SourceXchange API Client
 	 * @since 1.0.0
 	*/ public sourcexchange = sourcexchange
+	/**
+	 * The Pterodactyl API Client
+	 * @since 1.1.0
+	*/ public pterodactyl = pterodactyl
 	/**
 	 * The Sentry Scope
 	 * @since 1.0.0

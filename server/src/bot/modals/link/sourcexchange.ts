@@ -1,7 +1,6 @@
 import Modal from "@/bot/modal"
 import { TextInputBuilder, TextInputStyle } from "discord.js"
 import { count, eq } from "drizzle-orm"
-import axios from "axios"
 
 export default new Modal()
 	.setName('link-sourcexchange')
@@ -60,12 +59,12 @@ export default new Modal()
 						discordId: ctx.interaction.user.id,
 						paymentId: transactionId,
 						productId: products[i].id,
-						providerId: products[i].productProviderId,
+						providerId: products[i].productProviderId!,
 						created: new Date(access.created_at)
-					} as any),
+					}),
 				ctx.interaction.guild.members.fetch(ctx.interaction.user.id)
 					.then((member) => member.roles.add(products[i].role))
-					.then((member) => ctx.env.CUSTOMER_ROLE ? member.roles.add(ctx.env.CUSTOMER_ROLE) : null)
+					.then((member) => member.roles.add(ctx.env.CUSTOMER_ROLE))
 			])
 
 			return ctx.interaction.editReply(`\`🔗\` Purchase linked to **${products[i].name}**`)

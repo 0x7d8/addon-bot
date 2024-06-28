@@ -1,6 +1,7 @@
 import env from "@/globals/env"
 import database from "@/globals/database"
 import getVersion from "@/index"
+import * as pterodactyl from "@/globals/pterodactyl"
 
 export const runContext = {
 	/**
@@ -11,6 +12,10 @@ export const runContext = {
 	 * The Prisma Database Connection
 	 * @since 1.0.0
 	*/ database,
+	/**
+	 * The Pterodactyl API Client
+	 * @since 1.1.0
+	*/ pterodactyl: pterodactyl,
 	/**
 	 * The App Version
 	 * @since 1.0.0
