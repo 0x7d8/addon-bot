@@ -64,7 +64,9 @@ export default new Command()
 				)),
 			ctx.client.guilds.cache.get(ctx.env.DISCORD_SERVER)!
 				.members.fetch(ctx.interaction.user.id)
-					.then((member) => member.roles.add(ctx.env.DEMO_ROLE))
+					.then((member) => member.roles.add(ctx.env.DEMO_ROLE)),
+			ctx.client.guilds.cache.get(ctx.env.DISCORD_SERVER)!.channels.fetch(ctx.env.DEMO_CHANNEL)
+				.then((channel) => 'send' in channel! ? channel.send(`\`🔍\` <@${ctx.interaction.user.id}>s demo access has started, it expires <t:${Math.floor((Date.now() + time(1).h()) / 1000)}:R>`) : null)
 		])
 
 		return ctx.interaction.editReply(ctx.join(

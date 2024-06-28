@@ -25,6 +25,7 @@ const infos = z.object({
 	PTERO_ADMIN_TOKEN: z.string(),
 	PTERO_CLIENT_TOKEN: z.string(),
 
+	DEMO_CHANNEL: z.string(),
 	DEMO_ROLE: z.string(),
 	CUSTOMER_ROLE: z.string(),
 

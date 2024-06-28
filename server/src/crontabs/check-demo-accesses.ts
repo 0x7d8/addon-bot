@@ -32,7 +32,9 @@ export default new Crontab()
 				await Promise.allSettled([
 					member.roles.remove(env.DEMO_ROLE),
 					member.send('`🔍` Your **1 hour** demo acccess has expired.'),
-					ctx.pterodactyl.deleteUser(expiredDemoAccess.pterodactylId)
+					ctx.pterodactyl.deleteUser(expiredDemoAccess.pterodactylId),
+					client.guilds.cache.get(env.DISCORD_SERVER)!.channels.fetch(env.DEMO_CHANNEL)
+						.then((channel) => 'send' in channel! ? channel.send(`\`🔍\` <@${member.id}>s demo acccess has expired.`) : null)
 				])
 			}
 
