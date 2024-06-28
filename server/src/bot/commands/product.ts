@@ -147,7 +147,7 @@ export default new Command()
 						return ctx.interaction.reply({
 							embeds: [
 								ctx.Embed()
-									.setTitle(`\`📦\` Linked Products ${user.id !== ctx.interaction.user.id ? `(of ${user.username})` : ''}`.trim())
+									.setTitle(`\`📦\` Linked Products ${user.id !== ctx.interaction.user.id ? `(of \`${user.username}\`)` : ''}`.trim())
 									.setImage(products[0].banner)
 									.setThumbnail(products[0].icon)
 									.setDescription(ctx.join(
