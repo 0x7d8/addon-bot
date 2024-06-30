@@ -31,7 +31,7 @@ export default new Crontab()
 				)
 
 			if (member.roles.cache.has(env.DEMO_ROLE)) {
-				await Promise.all([
+				await Promise.allSettled([
 					member.roles.remove(env.DEMO_ROLE),
 					member.send('`🔍` Your **1 hour** demo acccess has expired.'),
 					ctx.pterodactyl.deleteUser(expiredDemoAccess.pterodactylId),
