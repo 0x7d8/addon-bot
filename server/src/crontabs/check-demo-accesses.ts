@@ -25,11 +25,13 @@ export default new Crontab()
 			.info()
 
 		for (const expiredDemoAccess of expiredDemoAccesses) {
-			const member = await client.guilds.cache.get(env.DISCORD_SERVER)!
-				.members.fetch(expiredDemoAccess.discordId)
+			const member = await client.guilds.fetch(env.DISCORD_SERVER)
+				.then((guild) => guild
+					.members.fetch(expiredDemoAccess.discordId)
+				)
 
 			if (member.roles.cache.has(env.DEMO_ROLE)) {
-				await Promise.allSettled([
+				await Promise.all([
 					member.roles.remove(env.DEMO_ROLE),
 					member.send('`🔍` Your **1 hour** demo acccess has expired.'),
 					ctx.pterodactyl.deleteUser(expiredDemoAccess.pterodactylId),
