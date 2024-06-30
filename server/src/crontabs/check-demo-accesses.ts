@@ -30,15 +30,13 @@ export default new Crontab()
 					.members.fetch(expiredDemoAccess.discordId)
 				)
 
-			if (member.roles.cache.has(env.DEMO_ROLE)) {
-				await Promise.allSettled([
-					member.roles.remove(env.DEMO_ROLE),
-					member.send('`🔍` Your **1 hour** demo acccess has expired.'),
-					ctx.pterodactyl.deleteUser(expiredDemoAccess.pterodactylId),
-					client.guilds.cache.get(env.DISCORD_SERVER)!.channels.fetch(env.DEMO_CHANNEL)
-						.then((channel) => 'send' in channel! ? channel.send(`\`🔍\` <@${member.id}>'s demo acccess has expired.`) : null)
-				])
-			}
+			await Promise.allSettled([
+				member.roles.remove(env.DEMO_ROLE),
+				member.send('`🔍` Your **1 hour** demo acccess has expired.'),
+				ctx.pterodactyl.deleteUser(expiredDemoAccess.pterodactylId),
+				client.guilds.cache.get(env.DISCORD_SERVER)!.channels.fetch(env.DEMO_CHANNEL)
+					.then((channel) => 'send' in channel! ? channel.send(`\`🔍\` <@${member.id}>'s demo acccess has expired.`) : null)
+			])
 
 			await ctx.database.update(ctx.database.schema.demoAcccesses)
 				.set({ expired: true })
