@@ -55,5 +55,5 @@ export const demoAcccesses = pgTable('demoAccesses', {
 
 	created: timestamp('created').default(sql`now()`).notNull()
 }, (demoAccess) => ({
-	discordIdIndex: uniqueIndex('discordId_idx').on(demoAccess.discordId)
+	pterodatylIdIndex: uniqueIndex('pterodactylId_idx').on(demoAccess.pterodactylId),
 }))
