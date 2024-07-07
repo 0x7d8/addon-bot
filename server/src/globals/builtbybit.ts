@@ -3,23 +3,23 @@ import { time } from "@rjweb/utils"
 import axios from "axios"
 
 const cache = new Map<number, {
-	remote_id: string
-	created_at: string
+	license_id: number
+	purchase_date: number
 }[]>()
 
 /**
  * Get Accesses for a Product
- * @since 1.0.0
+ * @since 1.2.0
 */ export async function accesses(product: number) {
 	const cached = cache.get(product)
 	if (cached) return cached
 
 	const data = await axios.get<{
-		remote_id: string
-		created_at: string
-	}[]>(`https://www.sourcexchange.net/api/products/${product}/payments`, {
+		license_id: number
+		purchase_date: number
+	}[]>(`https://api.builtbybit.com/v1/resources/${product}/purchases`, {
 		headers: {
-			Authorization: `Bearer ${env.SXC_TOKEN}`,
+			Authorization: `Private ${env.BBB_TOKEN}`,
 			Accept: 'application/json'
 		}
 	})

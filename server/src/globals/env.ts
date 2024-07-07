@@ -19,6 +19,7 @@ const infos = z.object({
 
 	BOT_TOKEN: z.string(),
 	SXC_TOKEN: z.string(),
+	BBB_TOKEN: z.string(),
 
 	PTERO_URL: z.string(),
 	PTERO_DEMO_SERVERS: z.string().transform((v) => v.split(',')),
