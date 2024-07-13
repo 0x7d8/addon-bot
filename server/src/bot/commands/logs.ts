@@ -11,8 +11,9 @@ export default new Command()
 			embeds: [
 				ctx.Embed()
 					.setTitle('`📜` Get Panel Logs')
+					.setThumbnail('https://pterodactyl.io/pterodactyl-flat.png')
 					.setDescription(ctx.join(
-						'```sh',
+						'```',
 						'tail -n 150 /var/www/pterodactyl/storage/logs/laravel-$(date +%F).log | nc pteropaste.com 99',
 						'```'
 					))
