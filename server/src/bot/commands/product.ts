@@ -117,7 +117,7 @@ export default new Command()
 											paymentId: access.license_id.toString(),
 											productId: products[i].id,
 											providerId: products[i].productProviderId!,
-											created: new Date(access.start_date)
+											created: new Date(access.start_date * 1000)
 										}),
 									ctx.interaction.guild.members.fetch(ctx.interaction.user.id)
 										.then((member) => member.roles.add(products[i].role))
