@@ -5,6 +5,7 @@ import database from "@/globals/database"
 import env from "@/globals/env"
 import * as git from "@/globals/git"
 import * as sourcexchange from "@/globals/sourcexchange"
+import * as builtbybit from "@/globals/builtbybit"
 import * as pterodactyl from "@/globals/pterodactyl"
 import { Scope } from "@sentry/node"
 import logger from "@/globals/logger"
@@ -134,6 +135,10 @@ export default class Context<Interaction extends any, Metadata extends boolean> 
 	 * The SourceXchange API Client
 	 * @since 1.0.0
 	*/ public sourcexchange = sourcexchange
+	/**
+	 * The BuiltByBit API Client
+	 * @since 1.3.0
+	*/ public builtbybit = builtbybit
 	/**
 	 * The Pterodactyl API Client
 	 * @since 1.1.0

@@ -33,6 +33,10 @@ export default new Command()
 				.setName('sourcexchange')
 				.setDescription('Link a SourceXchange purchase')
 			)
+			.addSubcommand((command) => command
+				.setName('builtbybit')
+				.setDescription('Link all BuiltByBit purchases')
+			)
 		)
 		.addSubcommand((command) => command
 			.setName('unlink')
@@ -46,6 +50,8 @@ export default new Command()
 		)
 	)
 	.listen(async(ctx) => {
+		if (!ctx.interaction.guild) return
+
 		switch (ctx.interaction.options.getSubcommandGroup()) {
 			case "link": {
 				switch (ctx.interaction.options.getSubcommand()) {
@@ -71,6 +77,57 @@ export default new Command()
 									) as any
 							]
 						})
+					}
+
+					case "builtbybit": {
+						await ctx.interaction.deferReply({ ephemeral: true })
+
+						try {
+							const user = await ctx.builtbybit.user(ctx.interaction.user.id)
+
+							const products = await ctx.database.select({
+								id: ctx.database.schema.products.id,
+								name: ctx.database.schema.products.name,
+								role: ctx.database.schema.products.role,
+								productProviderId: ctx.database.schema.productProviders.id,
+								productProviderProductId: ctx.database.schema.productProviders.productProviderId
+							}).from(ctx.database.schema.products)
+								.leftJoin(ctx.database.schema.productProviders, eq(ctx.database.schema.products.id, ctx.database.schema.productProviders.productId))
+								.where(eq(ctx.database.schema.productProviders.provider, 'BUILTBYBIT'))
+
+							const accesses = await Promise.all(products.map((product) => ctx.builtbybit.accesses(product.productProviderProductId!)))
+
+							let count = 0
+							for (let i = 0; i < accesses.length; i++) {
+								const access = accesses[i].find((access) => access.purchaser_id === user)
+								if (!access) continue
+
+								await Promise.all([
+									ctx.database.insert(ctx.database.schema.productLinks)
+										.values({
+											discordId: ctx.interaction.user.id,
+											paymentId: access.license_id.toString(),
+											productId: products[i].id,
+											providerId: products[i].productProviderId!,
+											created: new Date(access.purchase_date)
+										}),
+									ctx.interaction.guild.members.fetch(ctx.interaction.user.id)
+										.then((member) => member.roles.add(products[i].role))
+										.then((member) => member.roles.add(ctx.env.CUSTOMER_ROLE))
+										.catch(() => {})
+								])
+
+								count++
+							}
+
+							if (count < 1) return ctx.interaction.editReply('`🔗` No purchases found.')
+							return ctx.interaction.editReply(`\`🔗\` ${count} purchase${count === 1 ? '' : 's'} linked successfully`)
+						} catch {
+							return ctx.interaction.editReply(ctx.join(
+								'`🔗` No purchases found. Make sure to link your builtbybit account with your discord account.',
+								'> <https://builtbybit.com/account/discord>'
+							))
+						}
 					}
 				}
 			}

@@ -65,6 +65,7 @@ export default new Modal()
 				ctx.interaction.guild.members.fetch(ctx.interaction.user.id)
 					.then((member) => member.roles.add(products[i].role))
 					.then((member) => member.roles.add(ctx.env.CUSTOMER_ROLE))
+					.catch(() => {})
 			])
 
 			return ctx.interaction.editReply(`\`🔗\` Purchase linked to **${products[i].name}**`)
