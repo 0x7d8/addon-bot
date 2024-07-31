@@ -5,7 +5,7 @@ import axios from "axios"
 const cache = new Map<number, {
 	license_id: number
 	purchaser_id: number
-	purchase_date: number
+	start_date: number
 }[]>()
 
 const cache2 = new Map<string, number>()
@@ -17,11 +17,12 @@ const cache2 = new Map<string, number>()
 	const cached = cache.get(product)
 	if (cached) return cached
 
+	await time.wait(time(100).ms())
 	const { data } = await axios.get<{
 		data: {
 			license_id: number
 			purchaser_id: number
-			purchase_date: number
+			start_date: number
 		}[]
 	}>(`https://api.builtbybit.com/v1/resources/${product}/licenses`, {
 		headers: {

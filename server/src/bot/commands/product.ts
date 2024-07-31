@@ -87,20 +87,28 @@ export default new Command()
 
 							const products = await ctx.database.select({
 								id: ctx.database.schema.products.id,
+								paymentId: ctx.database.schema.productLinks.paymentId,
 								name: ctx.database.schema.products.name,
 								role: ctx.database.schema.products.role,
 								productProviderId: ctx.database.schema.productProviders.id,
 								productProviderProductId: ctx.database.schema.productProviders.productProviderId
 							}).from(ctx.database.schema.products)
 								.leftJoin(ctx.database.schema.productProviders, eq(ctx.database.schema.products.id, ctx.database.schema.productProviders.productId))
+								.leftJoin(ctx.database.schema.productLinks, and(
+									eq(ctx.database.schema.productProviders.id, ctx.database.schema.productLinks.providerId),
+									eq(ctx.database.schema.products.id, ctx.database.schema.productLinks.productId),
+									eq(ctx.database.schema.productLinks.discordId, ctx.interaction.user.id)
+								))
 								.where(eq(ctx.database.schema.productProviders.provider, 'BUILTBYBIT'))
 
-							const accesses = await Promise.all(products.map((product) => ctx.builtbybit.accesses(product.productProviderProductId!)))
-
 							let count = 0
-							for (let i = 0; i < accesses.length; i++) {
-								const access = accesses[i].find((access) => access.purchaser_id === user)
-								if (!access) continue
+							for (let i = 0; i < products.length; i++) {
+								const accesses = await ctx.builtbybit.accesses(products[i].productProviderProductId!)
+								const access = accesses.find((access) => access.purchaser_id === user)
+
+								console.log(access)
+
+								if (!access || products[i].paymentId) continue
 
 								await Promise.all([
 									ctx.database.insert(ctx.database.schema.productLinks)
@@ -109,7 +117,7 @@ export default new Command()
 											paymentId: access.license_id.toString(),
 											productId: products[i].id,
 											providerId: products[i].productProviderId!,
-											created: new Date(access.purchase_date)
+											created: new Date(access.start_date)
 										}),
 									ctx.interaction.guild.members.fetch(ctx.interaction.user.id)
 										.then((member) => member.roles.add(products[i].role))
