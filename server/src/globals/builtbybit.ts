@@ -55,7 +55,7 @@ const cache2 = new Map<string, number>()
 		}
 	})
 
-	cache2.set(discord, data.data.member_id)
+	if (data.data.member_id) cache2.set(discord, data.data.member_id)
 
 	return data.data.member_id
 }
