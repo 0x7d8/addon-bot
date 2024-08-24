@@ -60,6 +60,11 @@ export default new Modal()
 			.limit(1)
 			.then((r) => r[0])
 
+		if (!product) return ctx.interaction.reply({
+			ephemeral: true,
+			content: '`🔗` Product not found, make sure this product is from me'
+		})
+
 		await ctx.interaction.deferReply({ ephemeral: true })
 
 		await Promise.all([
