@@ -1,6 +1,6 @@
 import Modal from "@/bot/modal"
 import { TextInputBuilder, TextInputStyle } from "discord.js"
-import { count, eq } from "drizzle-orm"
+import { and, count, eq } from "drizzle-orm"
 
 export default new Modal()
 	.setName('link-sourcexchange')
@@ -35,45 +35,48 @@ export default new Modal()
 			content: '`🔗` This Transaction ID is already linked.'
 		})
 
-		const products = await ctx.database.select({
-			id: ctx.database.schema.products.id,
-			name: ctx.database.schema.products.name,
-			role: ctx.database.schema.products.role,
-			productProviderId: ctx.database.schema.productProviders.id,
-			productProviderProductId: ctx.database.schema.productProviders.productProviderId
-		}).from(ctx.database.schema.products)
-			.leftJoin(ctx.database.schema.productProviders, eq(ctx.database.schema.products.id, ctx.database.schema.productProviders.productId))
-			.where(eq(ctx.database.schema.productProviders.provider, 'SOURCEXCHANGE'))
-
-		const accesses = await Promise.all(products.map((product) => ctx.sourcexchange.accesses(product.productProviderProductId!)))
-
-		for (let i = 0; i < accesses.length; i++) {
-			const access = accesses[i].find((access) => access.remote_id === transactionId)
-			if (!access) continue
-
-			await ctx.interaction.deferReply({ ephemeral: true })
-
-			await Promise.all([
-				ctx.database.insert(ctx.database.schema.productLinks)
-					.values({
-						discordId: ctx.interaction.user.id,
-						paymentId: transactionId,
-						productId: products[i].id,
-						providerId: products[i].productProviderId!,
-						created: new Date(access.created_at)
-					}),
-				ctx.interaction.guild.members.fetch(ctx.interaction.user.id)
-					.then((member) => member.roles.add(products[i].role))
-					.then((member) => member.roles.add(ctx.env.CUSTOMER_ROLE))
-					.catch(() => {})
-			])
-
-			return ctx.interaction.editReply(`\`🔗\` Purchase linked to **${products[i].name}**`)
-		}
-
-		return ctx.interaction.reply({
+		const payment = await ctx.sourcexchange.payment(transactionId)
+		if (!payment) return ctx.interaction.reply({
 			ephemeral: true,
 			content: '`🔗` Purchase not found.'
 		})
+
+		if (payment.status !== 'completed') return ctx.interaction.reply({
+			ephemeral: true,
+			content: '`🔗` This Payment has not been completed.'
+		})
+
+		const product = await ctx.database.select({
+			id: ctx.database.schema.products.id,
+			name: ctx.database.schema.products.name,
+			role: ctx.database.schema.products.role,
+			productProviderId: ctx.database.schema.productProviders.id
+		}).from(ctx.database.schema.products)
+			.leftJoin(ctx.database.schema.productProviders, eq(ctx.database.schema.products.id, ctx.database.schema.productProviders.productId))
+			.where(and(
+				eq(ctx.database.schema.productProviders.provider, 'SOURCEXCHANGE'),
+				eq(ctx.database.schema.productProviders.productProviderId, payment.product_id)
+			))
+			.limit(1)
+			.then((r) => r[0])
+
+		await ctx.interaction.deferReply({ ephemeral: true })
+
+		await Promise.all([
+			ctx.database.insert(ctx.database.schema.productLinks)
+				.values({
+					discordId: ctx.interaction.user.id,
+					paymentId: transactionId,
+					productId: product.id,
+					providerId: product.productProviderId!,
+					created: new Date(payment.created_at)
+				}),
+			ctx.interaction.guild.members.fetch(ctx.interaction.user.id)
+				.then((member) => member.roles.add(product.role))
+				.then((member) => member.roles.add(ctx.env.CUSTOMER_ROLE))
+				.catch(() => {})
+		])
+
+		return ctx.interaction.editReply(`\`🔗\` Purchase linked to **${product.name}**`)
 	})
 	.export()
