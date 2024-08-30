@@ -1,4 +1,4 @@
-import { filesystem } from "@rjweb/utils"
+import { filesystem, string } from "@rjweb/utils"
 import { z } from "zod"
 
 let env: Record<string, string | undefined>
@@ -22,6 +22,7 @@ const infos = z.object({
 	BBB_TOKEN: z.string(),
 
 	PTERO_URL: z.string(),
+	PTERO_THEME_URLS: z.string().transform((v) => string.kv(v, null, ',', '=')).optional(),
 	PTERO_DEMO_SERVERS: z.string().transform((v) => v.split(',')),
 	PTERO_ADMIN_TOKEN: z.string(),
 	PTERO_CLIENT_TOKEN: z.string(),
