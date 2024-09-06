@@ -27,7 +27,7 @@ export default Object.assign(db, {
 	properCaseProvider(provider: typeof schema.productProvider.enumValues[number]) {
 		switch (provider) {
 			case "SOURCEXCHANGE": {
-				return "SourceXchange"
+				return "sourceXchange"
 			}
 
 			case "BUILTBYBIT": {
