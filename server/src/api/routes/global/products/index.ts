@@ -12,6 +12,7 @@ export = new globalAPIRouter.Path('/')
 				summary: ctr["@"].database.schema.products.summary
 			})
 				.from(ctr["@"].database.schema.products)
+				.orderBy(ctr["@"].database.schema.products.id)
 
 			return ctr.print({
 				success: true,
