@@ -31,6 +31,7 @@ const infos = z.object({
 	DEMO_ROLE: z.string(),
 	CUSTOMER_ROLE: z.string(),
 
+	PORT: z.string().transform((v) => parseInt(v)).optional(),
 	ENCODING_SEQUENCE: z.string(),
 	LOG_LEVEL: z.union([ z.literal('none'), z.literal('info'), z.literal('debug') ])
 })

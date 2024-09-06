@@ -11,6 +11,7 @@ export const products = pgTable('products', {
 	icon: varchar('icon', { length: 255 }).notNull(),
 	banner: varchar('banner', { length: 255 }).notNull(),
 	summary: varchar('summary', { length: 255 }).notNull(),
+	version: varchar('version', { length: 51 }).default('1.0.0').notNull(),
 
 	role: varchar('role', { length: 22 }).notNull(),
 }, (products) => ({
