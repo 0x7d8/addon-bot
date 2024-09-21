@@ -10,11 +10,11 @@ export default new Command()
 	)
 	.listen(async(ctx) => {
 		const demoAccesses = await ctx.database.select({
-			password: ctx.database.schema.demoAcccesses.password,
-			expired: ctx.database.schema.demoAcccesses.expired,
-			created: ctx.database.schema.demoAcccesses.created
-		}).from(ctx.database.schema.demoAcccesses)
-			.where(eq(ctx.database.schema.demoAcccesses.discordId, ctx.interaction.user.id))
+			password: ctx.database.schema.demoAccesses.password,
+			expired: ctx.database.schema.demoAccesses.expired,
+			created: ctx.database.schema.demoAccesses.created
+		}).from(ctx.database.schema.demoAccesses)
+			.where(eq(ctx.database.schema.demoAccesses.discordId, ctx.interaction.user.id))
 
 		const active = demoAccesses.find((access) => !access.expired)
 		if (active) return ctx.interaction.reply({
@@ -46,7 +46,7 @@ export default new Command()
 		})
 
 		await Promise.all([
-			ctx.database.insert(ctx.database.schema.demoAcccesses)
+			ctx.database.insert(ctx.database.schema.demoAccesses)
 				.values({
 					discordId: ctx.interaction.user.id,
 					pterodactylId: -1,
@@ -58,11 +58,11 @@ export default new Command()
 		const id = await ctx.pterodactyl.createUser(ctx.interaction.user, password)
 
 		await Promise.all([
-			ctx.database.update(ctx.database.schema.demoAcccesses)
+			ctx.database.update(ctx.database.schema.demoAccesses)
 				.set({ pterodactylId: id })
 				.where(and(
-					eq(ctx.database.schema.demoAcccesses.discordId, ctx.interaction.user.id),
-					eq(ctx.database.schema.demoAcccesses.password, password)
+					eq(ctx.database.schema.demoAccesses.discordId, ctx.interaction.user.id),
+					eq(ctx.database.schema.demoAccesses.password, password)
 				)),
 			ctx.client.guilds.cache.get(ctx.env.DISCORD_SERVER)!.members.fetch(ctx.interaction.user.id)
 				.then((member) => member.roles.add(ctx.env.DEMO_ROLE)),

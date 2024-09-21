@@ -1,4 +1,4 @@
-import { AutocompleteInteraction, ChatInputCommandInteraction, Client, DiscordAPIError, GatewayIntentBits, Partials, version } from "discord.js"
+import { AutocompleteInteraction, ChatInputCommandInteraction, Client, DiscordAPIError, EmbedBuilder, GatewayIntentBits, Partials, version } from "discord.js"
 import { filesystem } from "@rjweb/utils"
 import * as Sentry from "@sentry/node"
 import * as customid from "@/globals/customid"
@@ -10,6 +10,8 @@ import Event from "@/bot/event"
 import Command from "@/bot/command"
 import Button from "@/bot/button"
 import Modal from "@/bot/modal"
+import database from "@/globals/database"
+import { eq } from "drizzle-orm"
 
 const startTime = performance.now()
 export const client = new Client({
@@ -289,8 +291,7 @@ async function main() {
 		})
 	}
 
-	client.login(env.BOT_TOKEN).then(async() => {
-
+	await client.login(env.BOT_TOKEN).then(async() => {
 		await client.application?.commands.set(commands.map((command) => command['builder'].toJSON()))
 
 		logger()
@@ -298,6 +299,59 @@ async function main() {
 			.text(`(${version}) Connection established!`)
 			.text(`(${(performance.now() - startTime).toFixed(1)}ms) (${commands.length} registered Commands)`, (c) => c.gray)
 			.info()
+
+		const sendMessages = await database.select({
+			id: database.schema.sendMessages.id,
+			discordId: database.schema.sendMessages.discordId,
+			discordChannelId: database.schema.sendMessages.discordChannelId,
+			message: database.schema.sendMessages.message
+		})
+			.from(database.schema.sendMessages)
+			.where(eq(database.schema.sendMessages.enabled, true))
+
+		for (const sendMessage of sendMessages) {
+			logger()
+				.text('Sending message to')
+				.text(sendMessage.discordChannelId, (c) => c.cyan)
+				.text('...')
+				.info()
+
+			const channel = await client.channels.fetch(sendMessage.discordChannelId).catch(() => null)
+			if (!channel || !channel.isSendable()) continue
+
+			if (sendMessage.discordId) {
+				const message = await channel.messages.fetch(sendMessage.discordId).catch(() => null)
+
+				if (message) {
+					await message.edit({
+						embeds: [
+							new EmbedBuilder()
+								.setDescription(sendMessage.message)
+						]
+					}).catch(() => null)
+				} else {
+					sendMessage.discordId = null
+				}
+			}
+
+			if (!sendMessage.discordId) {
+				const message = await channel.send({
+					embeds: [
+						new EmbedBuilder()
+							.setDescription(sendMessage.message)
+					]
+				})
+
+				await database.update(database.schema.sendMessages)
+					.set({ discordId: message.id })
+					.where(eq(database.schema.sendMessages.id, sendMessage.id))
+			}
+
+			logger()
+				.text('Sent message to', (c) => c.green)
+				.text(sendMessage.discordChannelId, (c) => c.cyan)
+				.info()
+		}
 	}).catch((err) => {
 		logger()
 			.text('Discord', (c) => c.redBright)

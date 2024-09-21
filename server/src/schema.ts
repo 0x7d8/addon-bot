@@ -1,5 +1,5 @@
 import { sql } from "drizzle-orm"
-import { boolean, char, decimal, integer, pgEnum, pgTable, serial, timestamp, uniqueIndex, varchar } from "drizzle-orm/pg-core"
+import { boolean, char, decimal, text, integer, pgEnum, pgTable, serial, timestamp, uniqueIndex, varchar } from "drizzle-orm/pg-core"
 
 export const productProvider = pgEnum('productProvider', ['SOURCEXCHANGE', 'BUILTBYBIT'])
 export const currency = pgEnum('currency', ['EUR', 'USD'])
@@ -46,7 +46,7 @@ export const productLinks = pgTable('productLinks', {
 	discordIdProductIdProviderIdIndex: uniqueIndex('discordId_productId_providerId_idx').on(productLinks.discordId, productLinks.productId, productLinks.providerId)
 }))
 
-export const demoAcccesses = pgTable('demoAccesses', {
+export const demoAccesses = pgTable('demoAccesses', {
 	id: serial('id').primaryKey(),
 
 	expired: boolean('expired').default(false).notNull(),
@@ -57,4 +57,27 @@ export const demoAcccesses = pgTable('demoAccesses', {
 	created: timestamp('created').default(sql`now()`).notNull()
 }, (demoAccess) => ({
 	pterodatylIdIndex: uniqueIndex('pterodactylId_idx').on(demoAccess.pterodactylId)
+}))
+
+export const sendMessages = pgTable('sendMessages', {
+	id: serial('id').primaryKey(),
+
+	enabled: boolean('enabled').default(true).notNull(),
+	discordId: varchar('discordId', { length: 22 }),
+	discordChannelId: varchar('discordChannelId', { length: 22 }).notNull(),
+	message: text('message').notNull()
+}, (sendMessage) => ({
+	discordIdIndex: uniqueIndex('discordChannelId_discordId_idx').on(sendMessage.discordChannelId, sendMessage.discordId)
+}))
+
+export const faqs = pgTable('faqs', {
+	id: serial('id').primaryKey(),
+
+	title: varchar('title', { length: 31 }).notNull(),
+	content: text('content').notNull(),
+
+	created: timestamp('created').default(sql`now()`).notNull(),
+	updated: timestamp('updated').default(sql`now()`).notNull()
+}, (faq) => ({
+	titleIndex: uniqueIndex('title_idx').on(faq.title)
 }))

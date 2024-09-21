@@ -8,6 +8,13 @@
       "when": 1725654549785,
       "tag": "0000_elite_russian",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1726909378385,
+      "tag": "0001_mixed_xavin",
+      "breakpoints": true
     }
   ]
 }

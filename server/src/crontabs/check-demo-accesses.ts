@@ -8,12 +8,12 @@ export default new Crontab()
 	.cron('* * * * *')
 	.listen(async(ctx) => {
 		const expiredDemoAccesses = await ctx.database.select({
-			discordId: ctx.database.schema.demoAcccesses.discordId,
-			pterodactylId: ctx.database.schema.demoAcccesses.pterodactylId
-		}).from(ctx.database.schema.demoAcccesses)
+			discordId: ctx.database.schema.demoAccesses.discordId,
+			pterodactylId: ctx.database.schema.demoAccesses.pterodactylId
+		}).from(ctx.database.schema.demoAccesses)
 			.where(and(
-				eq(ctx.database.schema.demoAcccesses.expired, false),
-				sql`${ctx.database.schema.demoAcccesses.created} < current_timestamp - INTERVAL '1 hour'`
+				eq(ctx.database.schema.demoAccesses.expired, false),
+				sql`${ctx.database.schema.demoAccesses.created} < current_timestamp - INTERVAL '1 hour'`
 			))
 
 		if (!expiredDemoAccesses.length) return
@@ -38,8 +38,8 @@ export default new Crontab()
 					.then((channel) => 'send' in channel! ? channel.send(`\`🔍\` <@${member.id}>'s demo acccess has expired.`) : null)
 			])
 
-			await ctx.database.update(ctx.database.schema.demoAcccesses)
+			await ctx.database.update(ctx.database.schema.demoAccesses)
 				.set({ expired: true })
-				.where(eq(ctx.database.schema.demoAcccesses.discordId, expiredDemoAccess.discordId))
+				.where(eq(ctx.database.schema.demoAccesses.discordId, expiredDemoAccess.discordId))
 		}
 	})
