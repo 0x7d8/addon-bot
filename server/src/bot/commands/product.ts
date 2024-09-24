@@ -127,7 +127,7 @@ export default new Command()
 							}
 
 							if (count < 1) return ctx.interaction.editReply('`🔗` No purchases found.')
-							return ctx.interaction.editReply(`\`🔗\` ${count} purchase${count === 1 ? '' : 's'} linked successfully`)
+							return ctx.interaction.editReply(`\`🔗\` ${count} purchase${count === 1 ? '' : 's'} linked successfully.`)
 						} catch {
 							return ctx.interaction.editReply(ctx.join(
 								'`🔗` No purchases found. Make sure to link your builtbybit account with your discord account.',

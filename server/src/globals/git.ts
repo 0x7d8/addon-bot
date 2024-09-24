@@ -15,12 +15,7 @@ export const commits: Commit[] = []
 
 client.log().then(async(c) => {
 	for (const commit of c.all.toReversed()) {
-		let version: string
-		try {
-			version = JSON.parse(await client.show(`${commit.hash}:server/package.json`)).version
-		} catch {
-			version = JSON.parse(await client.show(`${commit.hash}:package.json`)).version
-		}
+		const version = JSON.parse(await client.show(`${commit.hash}:server/package.json`)).version
 
 		commits.push({
 			version: `${version}:${commit.hash.slice(0, 10)}`.padStart(17, ' '),
@@ -36,4 +31,9 @@ client.log().then(async(c) => {
 		.text(`(${version.major}.${version.minor}.${version.patch}) Commits loaded!`)
 		.text(`(${(performance.now() - startTime).toFixed(1)}ms) (${commits.length} Commits)`, (c) => c.gray)
     .info()
+}).catch((e) => {
+	logger()
+		.text('Git Commit Loading Error', (c) => c.red)
+		.text(e.message)
+		.error()
 })
