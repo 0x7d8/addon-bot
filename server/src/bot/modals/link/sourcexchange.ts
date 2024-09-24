@@ -62,7 +62,7 @@ export default new Modal()
 
 		if (!product) return ctx.interaction.reply({
 			ephemeral: true,
-			content: '`🔗` Product not found, make sure this product is from me'
+			content: '`🔗` Product not found, make sure this product is from me.'
 		})
 
 		await ctx.interaction.deferReply({ ephemeral: true })

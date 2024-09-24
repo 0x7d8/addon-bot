@@ -230,7 +230,7 @@ export default new Command()
 						const productId = ctx.interaction.options.getInteger('product', true)
 
 						const link = await ctx.database.select({
-							id: ctx.database.schema.productLinks.id,
+							productId: ctx.database.schema.productLinks.productId,
 							role: ctx.database.schema.products.role
 						}).from(ctx.database.schema.productLinks)
 							.innerJoin(ctx.database.schema.products, eq(ctx.database.schema.productLinks.productId, ctx.database.schema.products.id))
@@ -249,7 +249,7 @@ export default new Command()
 
 						await Promise.all([
 							ctx.database.delete(ctx.database.schema.productLinks)
-								.where(eq(ctx.database.schema.productLinks.id, link.id)),
+								.where(eq(ctx.database.schema.productLinks.productId, link.productId)),
 							ctx.interaction.guild!.members.fetch(ctx.interaction.user.id)
 								.then((member) => member.roles.remove(link.role))
 						])
@@ -267,7 +267,11 @@ export default new Command()
 			id: ctx.database.schema.products.id,
 			name: ctx.database.schema.products.name
 		}).from(ctx.database.schema.products)
-			.where(ilike(ctx.database.schema.products.name, `%${input}%`))
+			.innerJoin(ctx.database.schema.productLinks, eq(ctx.database.schema.products.id, ctx.database.schema.productLinks.productId))
+			.where(and(
+				ilike(ctx.database.schema.products.name, `%${input}%`),
+				eq(ctx.database.schema.productLinks.discordId, ctx.interaction.user.id)
+			))
 			.orderBy(ctx.database.schema.products.id)
 			.limit(25)
 

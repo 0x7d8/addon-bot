@@ -10,7 +10,6 @@ import axios from "axios"
 		created_at: string
 		status: 'pending' | 'completed'
 	}>(`https://www.sourcexchange.net/api/payments/${identifier}`, {
-		validateStatus: (status) => status === 200,
 		headers: {
 			Authorization: `Bearer ${env.SXC_TOKEN}`,
 			Accept: 'application/json'
