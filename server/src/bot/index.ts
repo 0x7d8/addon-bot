@@ -110,6 +110,9 @@ client.on('interactionCreate', async(interaction) => {
 			options = parseOptions(interaction.options)
 
 		transaction.setName(`autocomplete {/${commandName}}`)
+		transaction.setAttributes({
+			options: JSON.stringify(options)
+		})
 
 		const context = new Context(interaction, scope)
 		context['startTime'] = startTime
@@ -153,6 +156,9 @@ client.on('interactionCreate', async(interaction) => {
 		const options = args.map((arg) => JSON.parse(arg.replace(/%C2%B0|%5E/g, (c) => decodeURIComponent(c))))
 
 		transaction.setName(`button {${button['m_name']}}`)
+		transaction.setAttributes({
+			options: JSON.stringify(options)
+		})
 
 		const context = new Context(interaction, scope)
 		context['startTime'] = startTime
@@ -207,6 +213,10 @@ client.on('interactionCreate', async(interaction) => {
 			listenerOptions = listenerArgs.map((arg) => JSON.parse(arg.replace(/%C2%B0|%5E/g, (c) => decodeURIComponent(c))))
 
 		transaction.setName(`modal {${modal['m_name']}}`)
+		transaction.setAttributes({
+			modalOptions: JSON.stringify(modalOptions),
+			listenerOptions: JSON.stringify(listenerOptions)
+		})
 
 		const context = new Context(interaction, scope)
 		context['startTime'] = startTime

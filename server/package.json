@@ -19,7 +19,6 @@
     "module-alias": "^2.2.3",
     "node-cron": "^3.0.3",
     "pg": "^8.13.0",
-    "pretty-ms": "^9.1.0",
     "rjweb-server": "^9.8.2",
     "simple-git": "^3.27.0",
     "zod": "^3.23.8"

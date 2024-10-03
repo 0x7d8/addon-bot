@@ -8,8 +8,7 @@ import logger from "@/globals/logger"
 
 Sentry.init({
 	dsn: env.SENTRY_URL,
-	environment: 'production',
-	tracesSampleRate: 0.5
+	environment: process.env.NODE_ENV === 'development' ? 'development' : 'production'
 })
 
 export default function getVersion() {
