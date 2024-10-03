@@ -18,4 +18,9 @@ pnpm i
 
 # fill out the .env file
 cp .env.example .env
+
+pnpm kit migrate
+
+# start the bot
+pnpm dev
 ```
