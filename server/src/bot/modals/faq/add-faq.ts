@@ -1,6 +1,5 @@
 import Modal from "@/bot/modal"
 import { TextInputBuilder, TextInputStyle } from "discord.js"
-import { and, count, eq } from "drizzle-orm"
 
 export default new Modal()
     .setName('add-faq')
