@@ -33,7 +33,7 @@ export default new Modal()
         if (!ctx.interaction.guild) return
 
         const title = ctx.interaction.fields.getTextInputValue('title'),
-        content = ctx.interaction.fields.getTextInputValue('content')
+            content = ctx.interaction.fields.getTextInputValue('content')
 
         try {
             await ctx.database.insert(ctx.database.schema.faqs)
