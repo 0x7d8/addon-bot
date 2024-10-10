@@ -41,12 +41,12 @@ export default new Command()
             case "add": {
                 return ctx.interaction.showModal(addFaqModal(ctx.interaction, [], []))
             }
+
             case "remove": {
                 const faq = ctx.interaction.options.getInteger('faq', true)
 
                 const data = await ctx.database.select({
-                    title: ctx.database.schema.faqs.title,
-                    content: ctx.database.schema.faqs.content
+                    id: ctx.database.schema.faqs.id,
                 }).from(ctx.database.schema.faqs)
                     .where(eq(ctx.database.schema.faqs.id, faq))
                     .limit(1)
@@ -65,6 +65,7 @@ export default new Command()
                     content: '`✅` FAQ removed.'
                 })
             }
+
             case "update": {
                 const faq = ctx.interaction.options.getInteger('faq', true)
 

@@ -20,10 +20,13 @@ export default new Modal()
     )
     .listen(async (ctx, id: number, title: string) => {
         if (!ctx.interaction.guild) return
+
         const content = ctx.interaction.fields.getTextInputValue('content')
+
         await ctx.database.update(ctx.database.schema.faqs)
             .set({ title: title, content: content })
             .where(eq(ctx.database.schema.faqs.id, id))
+        
         return ctx.interaction.reply({
             ephemeral: true,
             content: '`✅` FAQ Content has been updated.'

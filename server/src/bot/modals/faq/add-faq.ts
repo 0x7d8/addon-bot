@@ -31,8 +31,10 @@ export default new Modal()
     )
     .listen(async (ctx) => {
         if (!ctx.interaction.guild) return
-        const title = ctx.interaction.fields.getTextInputValue('title')
-        const content = ctx.interaction.fields.getTextInputValue('content')
+
+        const title = ctx.interaction.fields.getTextInputValue('title'),
+        content = ctx.interaction.fields.getTextInputValue('content')
+
         try {
             await ctx.database.insert(ctx.database.schema.faqs)
                 .values({
