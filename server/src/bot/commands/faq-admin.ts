@@ -35,7 +35,7 @@ export default new Command()
             )
         )
     )
-    .listen(async(ctx) => {
+    .listen(async (ctx) => {
         switch (ctx.interaction.options.getSubcommand()) {
             case "add": {
                 return ctx.interaction.showModal(await addFaqModal(ctx.interaction, [], []))

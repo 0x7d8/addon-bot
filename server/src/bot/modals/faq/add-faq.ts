@@ -29,7 +29,7 @@ export default new Modal()
             ])
         )
     )
-    .listen(async(ctx) => {
+    .listen(async (ctx) => {
         if (!ctx.interaction.guild) return
 
         const title = ctx.interaction.fields.getTextInputValue('title'),
