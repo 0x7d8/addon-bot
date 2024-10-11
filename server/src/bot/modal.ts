@@ -2,7 +2,7 @@ import { ActionRowBuilder, ButtonInteraction, ChatInputCommandInteraction, Modal
 import Context from "@/bot/context"
 import * as customid from "@/globals/customid"
 
-export type Exported<Args extends any[] = [], ListenerArgs extends any[] = []> = (interaction: ButtonInteraction | ChatInputCommandInteraction, args: Args, listenerArgs: ListenerArgs) => ModalBuilder
+export type Exported<Args extends any[] = [], ListenerArgs extends any[] = []> = (interaction: ButtonInteraction | ChatInputCommandInteraction, args: Args, listenerArgs: ListenerArgs) => Promise<ModalBuilder>
 
 class RowBuilder {
 	protected rows: ((builder: ActionRowBuilder<ModalActionRowComponentBuilder>) => any)[] = []
@@ -19,14 +19,14 @@ class RowBuilder {
 
 export default class Builder<Excluded extends (keyof Builder)[] = [], Arguments extends any[] = [], ListenerArguments extends any[] = []> {
 	protected listener: (ctx: Context<ModalSubmitInteraction, false>) => any | Promise<any> = () => undefined
-	protected builder!: (builder: RowBuilder, ...args: any) => any
+	protected builder!: (builder: RowBuilder, ...args: any) => any | Promise<any>
 	protected title = ''
 	protected m_name = ''
 
 	/**
 	 * Build the Modal
 	 * @since 1.0.0
-	*/ public build<Args extends any[]>(callback: (builder: RowBuilder, ...args: Args) => any): Omit<Builder<[...Excluded, 'build'], Args, ListenerArguments>, 'build' | Excluded[number]> {
+	*/ public build<Args extends any[]>(callback: (builder: RowBuilder, ...args: Args) => any | Promise<any>): Omit<Builder<[...Excluded, 'build'], Args, ListenerArguments>, 'build' | Excluded[number]> {
 		this.builder = callback
 
 		return this as any
@@ -63,7 +63,7 @@ export default class Builder<Excluded extends (keyof Builder)[] = [], Arguments 
 	 * Build the Modal for external Use
 	 * @since 1.0.0
 	*/ public export(): Exported<Arguments, ListenerArguments> {
-		const fn: Exported<Arguments, ListenerArguments> & { m_name: string, listener: any } = (interaction, modalArgs, listenerArgs) => {
+		const fn: Exported<Arguments, ListenerArguments> & { m_name: string, listener: any } = async (interaction, modalArgs, listenerArgs) => {
 			const raw = `${this.m_name}°${modalArgs.map((a) => JSON.stringify(a).replace(/°|\^/g, (c) => encodeURIComponent(c))).join('°')}^${listenerArgs.map((a) => JSON.stringify(a).replace(/°|\^/g, (c) => encodeURIComponent(c))).join('°')}`
 
 			const rowBuilder = new RowBuilder(),
@@ -71,7 +71,10 @@ export default class Builder<Excluded extends (keyof Builder)[] = [], Arguments 
 					.setTitle(this.title)
 					.setCustomId(customid.encode(interaction.client.user.id.concat(interaction.guildId || 'g'), raw))
 
-			this.builder(rowBuilder, ...modalArgs)
+			const result = this.builder(rowBuilder, ...modalArgs)
+			if (result instanceof Promise) {
+				await result
+			}
 
 			for (const row of rowBuilder['rows']) {
 				const actionRow = new ActionRowBuilder<ModalActionRowComponentBuilder>()
