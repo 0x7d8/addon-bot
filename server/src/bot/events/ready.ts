@@ -12,9 +12,6 @@ export default new Event()
 			}).from(ctx.database.schema.products).then((r) => r[0].count)} Products`, { type: ActivityType.Watching })
 			await time.wait(time(10).s())
 
-			ctx.client.user.setActivity(`${ctx.git.commits.length} Commits`, { type: ActivityType.Watching })
-			await time.wait(time(10).s())
-
 			ctx.client.user.setActivity(`${ctx.client.ws.ping}ms Bot Ping`, { type: ActivityType.Watching })
 			await time.wait(time(10).s())
 		}

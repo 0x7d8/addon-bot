@@ -1,13 +1,13 @@
 import Command from "@/bot/command"
 import { and, count, eq, ilike } from "drizzle-orm"
 import productsButton from "@/bot/buttons/products"
-import { ActionRowBuilder, ButtonBuilder, ButtonStyle } from "discord.js"
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle, InteractionContextType } from "discord.js"
 import linkSourcexchangeButton from "@/bot/buttons/link/sourcexchange"
 
 export default new Command()
 	.build((builder) => builder
 		.setName('product')
-		.setDMPermission(false)
+		.setContexts(InteractionContextType.Guild)
 		.setDescription('Product commands')
 		.addSubcommandGroup((command) => command
 			.setName('list')

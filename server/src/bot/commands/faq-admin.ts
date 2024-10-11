@@ -1,14 +1,14 @@
 import Command from "@/bot/command"
-import { PermissionFlagsBits } from "discord.js"
+import { InteractionContextType, PermissionFlagsBits } from "discord.js"
 import { eq, ilike } from "drizzle-orm"
-import addFaqModal from "@/bot/modals/faq/add-faq"
-import updateFaqModal from "@/bot/modals/faq/update-faq"
+import addFaqModal from "@/bot/modals/faq/add"
+import updateFaqModal from "@/bot/modals/faq/update"
 
 export default new Command()
     .build((builder) => builder
         .setName('faq-admin')
-        .setDMPermission(false)
-        .setDescription('Administrator commands - Add, Remove or Update faqs')
+        .setContexts(InteractionContextType.Guild)
+        .setDescription('Add, Remove or Update faqs')
         .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
         .addSubcommand((subcommand) => subcommand
             .setName('add')
@@ -35,7 +35,7 @@ export default new Command()
             )
         )
     )
-    .listen(async (ctx) => {
+    .listen(async(ctx) => {
         switch (ctx.interaction.options.getSubcommand()) {
             case "add": {
                 return ctx.interaction.showModal(await addFaqModal(ctx.interaction, [], []))
@@ -84,7 +84,7 @@ export default new Command()
             }
         }
     })
-    .listenAutocomplete(async (ctx) => {
+    .listenAutocomplete(async(ctx) => {
         const search = ctx.interaction.options.getFocused(false)
 
         const faqs = await ctx.database.select({

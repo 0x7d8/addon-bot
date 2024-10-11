@@ -1,11 +1,12 @@
 import Command from "@/bot/command"
 import { string, time } from "@rjweb/utils"
+import { InteractionContextType } from "discord.js"
 import { eq, and } from "drizzle-orm"
 
 export default new Command()
 	.build((builder) => builder
 		.setName('demo')
-		.setDMPermission(false)
+		.setContexts(InteractionContextType.Guild)
 		.setDescription('Request a demo account')
 	)
 	.listen(async(ctx) => {

@@ -1,10 +1,11 @@
 import Command from "@/bot/command"
+import { InteractionContextType } from "discord.js"
 import { eq, ilike } from "drizzle-orm"
 
 export default new Command()
 	.build((builder) => builder
 		.setName('faq')
-		.setDMPermission(false)
+		.setContexts(InteractionContextType.Guild)
 		.setDescription('Get faqs for various issues')
 		.addIntegerOption((option) => option
 			.setName('faq')

@@ -1,10 +1,11 @@
 import Command from "@/bot/command"
+import { InteractionContextType } from "discord.js"
 import { count, eq, and, sum, avg, countDistinct } from "drizzle-orm"
 
 export default new Command()
 	.build((builder) => builder
 		.setName('stats')
-		.setDMPermission(false)
+		.setContexts(InteractionContextType.Guild)
 		.setDescription('Get basic statistics')
 	)
 	.listen(async(ctx) => {

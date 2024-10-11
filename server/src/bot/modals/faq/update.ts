@@ -6,7 +6,7 @@ import database from "@/globals/database"
 export default new Modal()
     .setName('update-faq')
     .setTitle('Update FAQ')
-    .build(async (builder, id: number) => {
+    .build(async(builder, id: number) => {
         const data = await database.select({
             title: database.schema.faqs.title,
             content: database.schema.faqs.content
@@ -40,19 +40,31 @@ export default new Modal()
                 ])
             )
     })
-    .listen(async (ctx, id: number) => {
+    .listen(async(ctx, id: number) => {
         if (!ctx.interaction.guild) return
 
         const title = ctx.interaction.fields.getTextInputValue('title'),
             content = ctx.interaction.fields.getTextInputValue('content')
 
-        await ctx.database.update(ctx.database.schema.faqs)
-            .set({ title, content })
-            .where(eq(ctx.database.schema.faqs.id, id))
+        try {
+            await ctx.database.update(ctx.database.schema.faqs)
+                .set({ title, content })
+                .where(eq(ctx.database.schema.faqs.id, id))
 
-        return ctx.interaction.reply({
-            ephemeral: true,
-            content: '`✅` FAQ has been updated.'
-        })
+            return ctx.interaction.reply({
+                ephemeral: true,
+                content: '`✅` FAQ has been updated.'
+            })
+        } catch {
+            return ctx.interaction.reply({
+                ephemeral: true,
+                content: '`❌` This Title is already taken.',
+                embeds: [
+                    ctx.Embed()
+                        .setTitle(title)
+                        .setDescription(content)
+                ]
+            })
+        }
     })
     .export()

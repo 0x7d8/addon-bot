@@ -1,5 +1,5 @@
 {
-  "version": "1.5.2",
+  "version": "1.6.0",
   "license": "UNLICENSED",
   "scripts": {
     "build": "rm -rf lib && esbuild `find src \\( -name '*.ts' -o -name '*.tsx' \\)` --platform='node' --sourcemap --ignore-annotations --format='cjs' --target='es2022' --outdir='lib' && esbuild src/index.ts --platform='node' --sourcemap --ignore-annotations --format='cjs' --target='es2022' --outdir='lib' --banner:js='require(\"module-alias\").addAlias(\"@\", __dirname);'",
@@ -10,26 +10,25 @@
   "dependencies": {
     "@rjweb/runtime-node": "^1.1.1",
     "@rjweb/sentry": "^2.1.3",
-    "@rjweb/utils": "^1.12.21",
-    "@sentry/node": "^7.119.0",
+    "@rjweb/utils": "^1.12.23",
+    "@sentry/node": "^7.119.2",
     "ansi-colors": "^4.1.3",
     "axios": "^1.7.7",
-    "discord.js": "^14.16.2",
+    "discord.js": "^14.16.3",
     "drizzle-orm": "^0.33.0",
     "module-alias": "^2.2.3",
     "node-cron": "^3.0.3",
     "pg": "^8.13.0",
     "rjweb-server": "^9.8.2",
-    "simple-git": "^3.27.0",
     "zod": "^3.23.8"
   },
   "devDependencies": {
-    "@types/node": "^22.6.1",
+    "@types/node": "^22.7.5",
     "@types/node-cron": "^3.0.11",
     "@types/pg": "^8.11.10",
     "drizzle-kit": "^0.24.2",
     "esbuild": "^0.24.0",
-    "typescript": "^5.6.2"
+    "typescript": "^5.6.3"
   },
   "optionalDependencies": {
     "bufferutil": "^4.0.8",

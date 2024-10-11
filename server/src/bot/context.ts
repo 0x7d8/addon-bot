@@ -3,7 +3,6 @@ import { client } from "@/bot"
 import getVersion from "@/index"
 import database from "@/globals/database"
 import env from "@/globals/env"
-import * as git from "@/globals/git"
 import * as sourcexchange from "@/globals/sourcexchange"
 import * as builtbybit from "@/globals/builtbybit"
 import * as pterodactyl from "@/globals/pterodactyl"
@@ -123,10 +122,6 @@ export default class Context<Interaction extends any, Metadata extends boolean> 
 	 * The Prisma Database Connection
 	 * @since 1.0.0
 	*/ public database = database
-	/**
-	 * The Git Client
-	 * @since 1.0.0
-	*/ public git = git
 	/**
 	 * The Logger Helper
 	 * @since 1.0.0
