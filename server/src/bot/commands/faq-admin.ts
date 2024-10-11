@@ -1,9 +1,8 @@
 import Command from "@/bot/command"
-import { ActionRowBuilder, ButtonBuilder, ButtonStyle, PermissionFlagsBits } from "discord.js"
+import { PermissionFlagsBits } from "discord.js"
 import { eq, ilike } from "drizzle-orm"
 import addFaqModal from "@/bot/modals/faq/add-faq"
-import updateFaqTitleButton from "@/bot/buttons/faq/update-faq-title"
-import updateFaqContentButton from "@/bot/buttons/faq/update-faq-content"
+import updateFaqModal from "@/bot/modals/faq/update-faq"
 
 export default new Command()
     .build((builder) => builder
@@ -36,10 +35,10 @@ export default new Command()
             )
         )
     )
-    .listen(async (ctx) => {
+    .listen(async(ctx) => {
         switch (ctx.interaction.options.getSubcommand()) {
             case "add": {
-                return ctx.interaction.showModal(addFaqModal(ctx.interaction, [], []))
+                return ctx.interaction.showModal(await addFaqModal(ctx.interaction, [], []))
             }
 
             case "remove": {
@@ -70,9 +69,7 @@ export default new Command()
                 const faq = ctx.interaction.options.getInteger('faq', true)
 
                 const data = await ctx.database.select({
-                    id: ctx.database.schema.faqs.id,
-                    title: ctx.database.schema.faqs.title,
-                    content: ctx.database.schema.faqs.content
+                    id: ctx.database.schema.faqs.id
                 }).from(ctx.database.schema.faqs)
                     .where(eq(ctx.database.schema.faqs.id, faq))
                     .limit(1)
@@ -83,28 +80,7 @@ export default new Command()
                     content: '`🔍` FAQ not found.'
                 })
 
-                return ctx.interaction.reply({
-                    ephemeral: true,
-                    embeds: [
-                        ctx.Embed()
-                            .setTitle(data.title)
-                            .setDescription(data.content)
-                    ], components: [
-                        new ActionRowBuilder()
-                            .setComponents(
-                                new ButtonBuilder()
-                                    .setLabel('Edit Title')
-                                    .setEmoji('1150889514236137605')
-                                    .setStyle(ButtonStyle.Primary)
-                                    .setCustomId(updateFaqTitleButton(ctx.interaction, data.id, data.content)),
-                                new ButtonBuilder()
-                                    .setLabel('Edit Content')
-                                    .setEmoji('1150889514236137605')
-                                    .setStyle(ButtonStyle.Primary)
-                                    .setCustomId(updateFaqContentButton(ctx.interaction, data.id, data.title)),
-                            ) as any
-                    ]
-                })
+                return ctx.interaction.showModal(await updateFaqModal(ctx.interaction, [data.id], [data.id]))
             }
         }
     })
