@@ -16,7 +16,9 @@ import { eq } from "drizzle-orm"
 const startTime = performance.now()
 export const client = new Client({
 	intents: [
-		GatewayIntentBits.Guilds
+		GatewayIntentBits.Guilds,
+		GatewayIntentBits.GuildMessages,
+		GatewayIntentBits.MessageContent
 	]
 })
 
