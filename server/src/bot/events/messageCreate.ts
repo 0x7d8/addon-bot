@@ -5,6 +5,7 @@ import { size } from "@rjweb/utils"
 
 const commonFileExtensions: Record<string, string> = Object.freeze({
 	'txt': 'text/plain',
+	'log': 'text/plain',
 	'ts': 'text/typescript',
 	'js': 'text/javascript',
 	'yaml': 'text/yaml',
@@ -23,7 +24,7 @@ const commonFileExtensions: Record<string, string> = Object.freeze({
 	'cpp': 'text/cpp',
 	'h': 'text/cpp',
 	'cs': 'text/csharp',
-	'sh': 'text/shell'
+	'sh': 'text/shell',
 })
 
 const commonFileExtensionsArr = Object.keys(commonFileExtensions)
