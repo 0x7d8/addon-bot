@@ -52,6 +52,7 @@ const button: Exported<[user: string | null, current: number, type: PaginateType
 				}).from(ctx.database.schema.products)
 					.leftJoin(ctx.database.schema.productLinks, eq(ctx.database.schema.products.id, ctx.database.schema.productLinks.productId))
 					.where(eq(ctx.database.schema.productLinks.discordId, user))
+					.groupBy(ctx.database.schema.products.id)
 					.then((r) => r[0].count),
 				({ skip, take }) => ctx.database.select({
 					name: ctx.database.schema.products.name,

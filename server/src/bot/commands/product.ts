@@ -200,6 +200,7 @@ export default new Command()
 							}).from(ctx.database.schema.products)
 								.leftJoin(ctx.database.schema.productLinks, eq(ctx.database.schema.products.id, ctx.database.schema.productLinks.productId))
 								.where(eq(ctx.database.schema.productLinks.discordId, user.id))
+								.groupBy(ctx.database.schema.products.id)
 								.then((r) => r[0].count)
 						])
 
