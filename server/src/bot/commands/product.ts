@@ -193,6 +193,7 @@ export default new Command()
 								.leftJoin(ctx.database.schema.productLinks, eq(ctx.database.schema.products.id, ctx.database.schema.productLinks.productId))
 								.where(eq(ctx.database.schema.productLinks.discordId, user.id))
 								.orderBy(ctx.database.schema.products.id)
+								.groupBy(ctx.database.schema.products.id)
 								.limit(1),
 							ctx.database.select({
 								count: count(ctx.database.schema.products.id)
