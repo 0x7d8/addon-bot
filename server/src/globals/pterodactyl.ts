@@ -37,6 +37,8 @@ import axios from "axios"
 			'splitter.create',
 			'splitter.update',
 			'splitter.delete',
+			'templates.read',
+			'templates.install',
 			'backup.create',
 			'backup.read',
 			'backup.delete',
