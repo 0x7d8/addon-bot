@@ -49,15 +49,6 @@ export default new Command()
 				.setRequired(true)
 			)
 		)
-		.addSubcommand((command) => command
-			.setName('detect')
-			.setDescription('Detect all installed products on a panel')
-			.addStringOption((option) => option
-				.setName('url')
-				.setDescription('The url of the panel to detect products on')
-				.setRequired(true)
-			)
-		)
 	)
 	.listen(async(ctx) => {
 		if (!ctx.interaction.guild) return
@@ -269,45 +260,6 @@ export default new Command()
 						])
 
 						return ctx.interaction.editReply('`🔗` Product unlinked successfully.')
-					}
-
-					case "detect": {
-						const url = ctx.interaction.options.getString('url', true)
-
-						try {
-							const parsed = new URL(url),
-								products = await ctx.database.select({
-									name: ctx.database.schema.products.name,
-									identifier: ctx.database.schema.products.identifier,
-									summary: ctx.database.schema.products.summary
-								}).from(ctx.database.schema.products)
-
-							await ctx.interaction.deferReply()
-
-							const detected: [typeof products[0], boolean][] = await Promise.all(products.map(async(product) => {
-								const response = await axios.get(`${parsed.origin}/extensions/${product.identifier}`).catch(() => null)
-
-								if (response?.data && response.data.length < 200) return [product, response.data === '%%__NONCE__%%'] as const
-								else return null
-							})).then((r) => r.filter(Boolean)) as any
-
-							if (detected.length < 1) return ctx.interaction.editReply(`\`🔗\` No products detected on \`${parsed.origin}\``)
-
-							return ctx.interaction.editReply({
-								embeds: [
-									ctx.Embed()
-										.setTitle(`\`🔗\` Detected Products (${detected.length}) on \`${parsed.origin}\``)
-										.setDescription(ctx.join(
-											...detected.map(([product, dev]) => `**${product.name}**${dev ? ' `DEV VERSION`' : ''}\n> ${product.summary}\n`)
-										))
-								]
-							})
-						} catch {
-							return ctx.interaction.reply({
-								ephemeral: true,
-								content: '`🔗` Invalid URL.'
-							})
-						}
 					}
 				}
 			}
