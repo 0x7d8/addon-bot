@@ -14,6 +14,7 @@ const button: Exported<[user: string | null, current: number, type: PaginateType
 						icon: ctx.database.schema.products.icon,
 						banner: ctx.database.schema.products.banner,
 						summary: ctx.database.schema.products.summary,
+						version: ctx.database.schema.products.version,
 						provider: ctx.database.schema.productProviders.provider,
 						price: ctx.database.schema.productProviders.price,
 						currency: ctx.database.schema.productProviders.currency,
@@ -34,7 +35,7 @@ const button: Exported<[user: string | null, current: number, type: PaginateType
 							.setThumbnail(data[0].icon)
 							.setDescription(ctx.join(
 								`## ${data[0].name}`,
-								data[0].summary,
+								`> \`${data[0].version}\` ${data[0].summary}`,
 								'',
 								'**Purchase**',
 								...data.filter((product) => product.name === data[0].name).map((product) =>
@@ -58,7 +59,8 @@ const button: Exported<[user: string | null, current: number, type: PaginateType
 					name: ctx.database.schema.products.name,
 					icon: ctx.database.schema.products.icon,
 					banner: ctx.database.schema.products.banner,
-					summary: ctx.database.schema.products.summary
+					summary: ctx.database.schema.products.summary,
+					version: ctx.database.schema.products.version
 				}).from(ctx.database.schema.products)
 					.leftJoin(ctx.database.schema.productLinks, eq(ctx.database.schema.products.id, ctx.database.schema.productLinks.productId))
 					.where(eq(ctx.database.schema.productLinks.discordId, user))
@@ -77,7 +79,7 @@ const button: Exported<[user: string | null, current: number, type: PaginateType
 							.setThumbnail(data[0].icon)
 							.setDescription(ctx.join(
 								`## ${data[0].name}`,
-								data[0].summary
+								`> \`${data[0].version}\` ${data[0].summary}`
 							))
 							.setFooter({ text: `${total} Products` })
 					], components: ctx.paginateButtons(page, total, (type) => button(ctx.interaction, user, page, type), 1)

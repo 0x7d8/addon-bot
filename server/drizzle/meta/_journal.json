@@ -15,6 +15,13 @@
       "when": 1726909378385,
       "tag": "0001_mixed_xavin",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1730629360736,
+      "tag": "0002_fine_chameleon",
+      "breakpoints": true
     }
   ]
 }

@@ -1,5 +1,5 @@
 import { sql } from "drizzle-orm"
-import { boolean, char, decimal, text, integer, pgEnum, pgTable, serial, timestamp, uniqueIndex, varchar } from "drizzle-orm/pg-core"
+import { boolean, char, decimal, text, integer, pgEnum, pgTable, serial, timestamp, uniqueIndex, varchar, index } from "drizzle-orm/pg-core"
 
 export const productProvider = pgEnum('productProvider', ['SOURCEXCHANGE', 'BUILTBYBIT'])
 export const currency = pgEnum('currency', ['EUR', 'USD'])
@@ -12,10 +12,12 @@ export const products = pgTable('products', {
 	banner: varchar('banner', { length: 255 }).notNull(),
 	summary: varchar('summary', { length: 255 }).notNull(),
 	version: varchar('version', { length: 51 }).default('1.0.0').notNull(),
+	identifier: varchar('identifier', { length: 51 }).notNull().default(sql`gen_random_uuid()`),
 
 	role: varchar('role', { length: 22 }).notNull(),
 }, (products) => ({
-	nameIndex: uniqueIndex('name_idx').on(products.name)
+	nameIndex: uniqueIndex('name_idx').on(products.name),
+	identifierIndex: uniqueIndex('identifier_idx').on(products.identifier)
 }))
 
 export const productProviders = pgTable('productProviders', {
@@ -56,7 +58,8 @@ export const demoAccesses = pgTable('demoAccesses', {
 
 	created: timestamp('created').default(sql`now()`).notNull()
 }, (demoAccess) => ({
-	pterodatylIdIndex: uniqueIndex('pterodactylId_idx').on(demoAccess.pterodactylId)
+	pterodatylIdIndex: uniqueIndex('pterodactylId_idx').on(demoAccess.pterodactylId),
+	discordIdIndex: index('discordId_idx').on(demoAccess.discordId)
 }))
 
 export const sendMessages = pgTable('sendMessages', {

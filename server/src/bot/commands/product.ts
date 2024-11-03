@@ -3,6 +3,7 @@ import { and, count, eq, ilike } from "drizzle-orm"
 import productsButton from "@/bot/buttons/products"
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, InteractionContextType } from "discord.js"
 import linkSourcexchangeButton from "@/bot/buttons/link/sourcexchange"
+import axios from "axios"
 
 export default new Command()
 	.build((builder) => builder
@@ -45,6 +46,15 @@ export default new Command()
 				.setName('product')
 				.setDescription('The product to unlink')
 				.setAutocomplete(true)
+				.setRequired(true)
+			)
+		)
+		.addSubcommand((command) => command
+			.setName('detect')
+			.setDescription('Detect all installed products on a panel')
+			.addStringOption((option) => option
+				.setName('url')
+				.setDescription('The url of the panel to detect products on')
 				.setRequired(true)
 			)
 		)
@@ -147,6 +157,7 @@ export default new Command()
 								icon: ctx.database.schema.products.icon,
 								banner: ctx.database.schema.products.banner,
 								summary: ctx.database.schema.products.summary,
+								version: ctx.database.schema.products.version,
 								provider: ctx.database.schema.productProviders.provider,
 								price: ctx.database.schema.productProviders.price,
 								currency: ctx.database.schema.productProviders.currency,
@@ -168,7 +179,7 @@ export default new Command()
 									.setThumbnail(products[0].icon)
 									.setDescription(ctx.join(
 										`## ${products[0].name}`,
-										products[0].summary,
+										`> \`${products[0].version}\` ${products[0].summary}`,
 										'',
 										'**Purchase**',
 										...products.filter((product) => product.name === products[0].name).map((product) =>
@@ -188,7 +199,8 @@ export default new Command()
 								name: ctx.database.schema.products.name,
 								icon: ctx.database.schema.products.icon,
 								banner: ctx.database.schema.products.banner,
-								summary: ctx.database.schema.products.summary
+								summary: ctx.database.schema.products.summary,
+								version: ctx.database.schema.products.version
 							}).from(ctx.database.schema.products)
 								.leftJoin(ctx.database.schema.productLinks, eq(ctx.database.schema.products.id, ctx.database.schema.productLinks.productId))
 								.where(eq(ctx.database.schema.productLinks.discordId, user.id))
@@ -217,7 +229,7 @@ export default new Command()
 									.setThumbnail(products[0].icon)
 									.setDescription(ctx.join(
 										`## ${products[0].name}`,
-										products[0].summary
+										`> \`${products[0].version}\` ${products[0].summary}`
 									))
 									.setFooter({ text: `${total} Products` })
 							], components: ctx.paginateButtons(1, total, (type) => productsButton(ctx.interaction, user.id, 1, type), 1)
@@ -257,6 +269,45 @@ export default new Command()
 						])
 
 						return ctx.interaction.editReply('`🔗` Product unlinked successfully.')
+					}
+
+					case "detect": {
+						const url = ctx.interaction.options.getString('url', true)
+
+						try {
+							const parsed = new URL(url),
+								products = await ctx.database.select({
+									name: ctx.database.schema.products.name,
+									identifier: ctx.database.schema.products.identifier,
+									summary: ctx.database.schema.products.summary
+								}).from(ctx.database.schema.products)
+
+							await ctx.interaction.deferReply()
+
+							const detected: [typeof products[0], boolean][] = await Promise.all(products.map(async(product) => {
+								const response = await axios.get(`${parsed.origin}/extensions/${product.identifier}`).catch(() => null)
+
+								if (response?.data && response.data.length < 200) return [product, response.data === '%%__NONCE__%%'] as const
+								else return null
+							})).then((r) => r.filter(Boolean)) as any
+
+							if (detected.length < 1) return ctx.interaction.editReply(`\`🔗\` No products detected on \`${parsed.origin}\``)
+
+							return ctx.interaction.editReply({
+								embeds: [
+									ctx.Embed()
+										.setTitle(`\`🔗\` Detected Products (${detected.length}) on \`${parsed.origin}\``)
+										.setDescription(ctx.join(
+											...detected.map(([product, dev]) => `**${product.name}**${dev ? ' `DEV VERSION`' : ''}\n> ${product.summary}\n`)
+										))
+								]
+							})
+						} catch {
+							return ctx.interaction.reply({
+								ephemeral: true,
+								content: '`🔗` Invalid URL.'
+							})
+						}
 					}
 				}
 			}
