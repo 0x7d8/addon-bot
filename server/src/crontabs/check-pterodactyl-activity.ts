@@ -76,7 +76,7 @@ export default new Crontab()
 										inline: true
 									},
 									{
-										name: `\`🔍\` User`,
+										name: `\`👤\` User`,
 										value: `<@${users.find((u) => u.discordId === a.relationships.actor.attributes!.username.slice(5))?.discordId ?? '123'}>`,
 										inline: true
 									},
@@ -85,14 +85,14 @@ export default new Crontab()
 										value: `[\`${name}\`](<${ctx.env.PTERO_URL}/server/${uuid.slice(0, 8)})`,
 										inline: true
 									},
-									{
-										name: '`🔍` Properties',
+									...Object.keys(a.properties).length ? [{
+										name: '`📄` Properties',
 										value: ctx.join(
 											'```json',
 											JSON.stringify(a.properties, null, 2),
 											'```'
 										)
-									}
+									}] : []
 								])
 								.setTimestamp(new Date(a.timestamp))
 						]
