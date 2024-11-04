@@ -83,3 +83,50 @@ import axios from "axios"
 		}
 	})
 }
+
+/**
+ * Get all Servers
+ * @since 1.8.0
+*/ export async function getServers(): Promise<[name: string, uuid: string][]> {
+	const data = await axios.get(`${env.PTERO_URL}/api/client`, {
+		headers: {
+			Authorization: `Bearer ${env.PTERO_CLIENT_TOKEN}`,
+			Accept: 'application/json'
+		}
+	})
+
+	return data.data.data.map((server: any) => [server.attributes.name, server.attributes.uuid])
+}
+
+export type Activity = {
+	id: string
+	event: string
+	is_api: boolean
+	properties: Record<string, any>
+	timestamp: string
+	relationships: {
+		actor: {
+			object: 'null_resource'
+			attributes: null
+		} | {
+			object: 'user'
+			attributes: {
+				username: string
+			}
+		}
+	}
+}
+
+/**
+ * Get the Activity of a Server
+ * @since 1.8.0
+*/ export async function getActivity(server: string): Promise<Activity[]> {
+	const data = await axios.get(`${env.PTERO_URL}/api/client/servers/${server}/activity?sort=-timestamp&page=1&per_page=100&include[]=actor`, {
+		headers: {
+			Authorization: `Bearer ${env.PTERO_CLIENT_TOKEN}`,
+			Accept: 'application/json'
+		}
+	})
+
+	return data.data.data.map((activity: any) => activity.attributes)
+}

@@ -1,0 +1,1 @@
+ALTER TABLE "pterodactylActivity" ADD COLUMN "pterodactylServerId" uuid NOT NULL;

@@ -1,5 +1,5 @@
 import Command from "@/bot/command"
-import { string, time } from "@rjweb/utils"
+import { number, string, time } from "@rjweb/utils"
 import { InteractionContextType } from "discord.js"
 import { eq, and } from "drizzle-orm"
 
@@ -50,7 +50,7 @@ export default new Command()
 			ctx.database.insert(ctx.database.schema.demoAccesses)
 				.values({
 					discordId: ctx.interaction.user.id,
-					pterodactylId: -1,
+					pterodactylId: -number.generate(0, 100000),
 					password
 				}),
 			ctx.interaction.deferReply({ ephemeral: true })

@@ -1,5 +1,5 @@
 import { sql } from "drizzle-orm"
-import { boolean, char, decimal, text, integer, pgEnum, pgTable, serial, timestamp, uniqueIndex, varchar, index } from "drizzle-orm/pg-core"
+import { boolean, char, decimal, text, integer, pgEnum, pgTable, serial, timestamp, uniqueIndex, varchar, index, jsonb, uuid } from "drizzle-orm/pg-core"
 
 export const productProvider = pgEnum('productProvider', ['SOURCEXCHANGE', 'BUILTBYBIT'])
 export const currency = pgEnum('currency', ['EUR', 'USD'])
@@ -83,4 +83,18 @@ export const faqs = pgTable('faqs', {
 	updated: timestamp('updated').default(sql`now()`).notNull()
 }, (faq) => ({
 	titleIndex: uniqueIndex('title_idx').on(faq.title)
+}))
+
+export const pterodactylActivity = pgTable('pterodactylActivity', {
+	id: serial('id').primaryKey(),
+	pterodactylId: integer('pterodactylId').references(() => demoAccesses.pterodactylId, { onDelete: 'set null' }),
+	pterodactylServerId: uuid('pterodactylServerId').notNull(),
+
+	identifier: char('identifier', { length: 40 }).notNull(),
+	event: varchar('event', { length: 121 }).notNull(),
+	properties: jsonb('properties').notNull(),
+
+	created: timestamp('created').default(sql`now()`).notNull()
+}, (activity) => ({
+	identifierIndex: uniqueIndex('activity_identifier_idx').on(activity.identifier)
 }))
