@@ -1,4 +1,4 @@
-import { AutocompleteInteraction, ChatInputCommandInteraction, Client, DiscordAPIError, EmbedBuilder, GatewayIntentBits, Partials, version } from "discord.js"
+import { AutocompleteInteraction, ChatInputCommandInteraction, Client, DiscordAPIError, EmbedBuilder, GatewayIntentBits, version } from "discord.js"
 import { filesystem } from "@rjweb/utils"
 import * as Sentry from "@sentry/node"
 import * as customid from "@/globals/customid"

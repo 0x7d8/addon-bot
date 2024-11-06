@@ -35,7 +35,10 @@ export default new Crontab()
 				member.send('`🔍` Your **1 hour** demo acccess has expired.'),
 				ctx.pterodactyl.deleteUser(expiredDemoAccess.pterodactylId),
 				client.guilds.cache.get(env.DISCORD_SERVER)!.channels.fetch(env.DEMO_CHANNEL)
-					.then((channel) => 'send' in channel! ? channel.send(`\`🔍\` <@${member.id}>'s demo acccess has expired.`) : null)
+					.then((channel) => 'send' in channel!
+						? channel.send({ content: `\`🔍\` <@${member.id}>'s demo acccess has expired.`, allowedMentions: { users: [] } })
+						: null
+					)
 			])
 
 			await ctx.database.update(ctx.database.schema.demoAccesses)

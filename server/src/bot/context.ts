@@ -15,7 +15,7 @@ type PromiseOrNot<T> = T | Promise<T>
 
 const version = getVersion()
 
-export default class Context<Interaction extends any, Metadata extends boolean> {
+export default class Context<Interaction extends any> {
 	protected startTime!: number
 
 	/**

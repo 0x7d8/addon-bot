@@ -1,5 +1,5 @@
 {
-  "version": "1.8.0",
+  "version": "1.8.1",
   "license": "UNLICENSED",
   "scripts": {
     "build": "rm -rf lib && esbuild `find src \\( -name '*.ts' -o -name '*.tsx' \\)` --platform='node' --sourcemap --ignore-annotations --format='cjs' --target='es2022' --outdir='lib' && esbuild src/index.ts --platform='node' --sourcemap --ignore-annotations --format='cjs' --target='es2022' --outdir='lib' --banner:js='require(\"module-alias\").addAlias(\"@\", __dirname);'",
@@ -23,7 +23,7 @@
     "zod": "^3.23.8"
   },
   "devDependencies": {
-    "@types/node": "^22.8.7",
+    "@types/node": "^22.9.0",
     "@types/node-cron": "^3.0.11",
     "@types/pg": "^8.11.10",
     "drizzle-kit": "^0.24.2",

@@ -18,7 +18,7 @@ class RowBuilder {
 }
 
 export default class Builder<Excluded extends (keyof Builder)[] = [], Arguments extends any[] = [], ListenerArguments extends any[] = []> {
-	protected listener: (ctx: Context<ModalSubmitInteraction, false>) => any | Promise<any> = () => undefined
+	protected listener: (ctx: Context<ModalSubmitInteraction>) => any | Promise<any> = () => undefined
 	protected builder!: (builder: RowBuilder, ...args: any) => any | Promise<any>
 	protected title = ''
 	protected m_name = ''
@@ -53,7 +53,7 @@ export default class Builder<Excluded extends (keyof Builder)[] = [], Arguments 
 	/**
 	 * Listen for Events
 	 * @since 1.0.0
-	*/ public listen<Args extends any[]>(callback: (ctx: Context<ModalSubmitInteraction, true>, ...args: Args) => any | Promise<any>): Omit<Builder<[...Excluded, 'listen'], Arguments, Args>, 'listen' | Excluded[number]> {
+	*/ public listen<Args extends any[]>(callback: (ctx: Context<ModalSubmitInteraction>, ...args: Args) => any | Promise<any>): Omit<Builder<[...Excluded, 'listen'], Arguments, Args>, 'listen' | Excluded[number]> {
 		this.listener = callback as any
 
 		return this as any

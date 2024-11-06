@@ -60,6 +60,8 @@ import axios from "axios"
 			'schedule.read',
 			'schedule.update',
 			'schedule.delete',
+			'settings.rename',
+			'settings.change-egg',
 			'settings.reinstall'
 		]
 	}, {

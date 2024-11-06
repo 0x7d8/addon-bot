@@ -2,9 +2,9 @@ import { AutocompleteInteraction, ChatInputCommandInteraction, SlashCommandBuild
 import Context from "@/bot/context"
 
 export default class Builder<Excluded extends (keyof Builder)[] = []> {
-	protected builder: SlashCommandBuilder = new SlashCommandBuilder().setDMPermission(false)
-	protected listener: (ctx: Context<ChatInputCommandInteraction, true>) => any | Promise<any> = () => undefined
-	protected autocomplete: (ctx: Context<AutocompleteInteraction, true>) => any | Promise<any> = () => undefined
+	protected builder: SlashCommandBuilder = new SlashCommandBuilder()
+	protected listener: (ctx: Context<ChatInputCommandInteraction>) => any | Promise<any> = () => undefined
+	protected autocomplete: (ctx: Context<AutocompleteInteraction>) => any | Promise<any> = () => undefined
 
 	/**
 	 * Build the Command
@@ -18,7 +18,7 @@ export default class Builder<Excluded extends (keyof Builder)[] = []> {
 	/**
 	 * Listen for Events
 	 * @since 1.0.0
-	*/ public listen(callback: (ctx: Context<ChatInputCommandInteraction, true>) => any | Promise<any>): Omit<Builder<[...Excluded, 'listen']>, 'listen' | Excluded[number]> {
+	*/ public listen(callback: (ctx: Context<ChatInputCommandInteraction>) => any | Promise<any>): Omit<Builder<[...Excluded, 'listen']>, 'listen' | Excluded[number]> {
 		this.listener = callback as any
 
 		return this as any
@@ -27,7 +27,7 @@ export default class Builder<Excluded extends (keyof Builder)[] = []> {
 	/**
 	 * Listen for Autocomplete
 	 * @since 1.0.0
-	*/ public listenAutocomplete(callback: (ctx: Context<AutocompleteInteraction, true>) => any | Promise<any>): Omit<Builder<[...Excluded, 'listenAutocomplete']>, 'listenAutocomplete' | Excluded[number]> {
+	*/ public listenAutocomplete(callback: (ctx: Context<AutocompleteInteraction>) => any | Promise<any>): Omit<Builder<[...Excluded, 'listenAutocomplete']>, 'listenAutocomplete' | Excluded[number]> {
 		this.autocomplete = callback as any
 
 		return this as any

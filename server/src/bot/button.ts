@@ -6,7 +6,7 @@ export type Exported<Args extends any[] = []> = (interaction: { client: Client<t
 export type PaginateType = 'next' | 'back' | 'refresh' | 'last' | 'first'
 
 export default class Builder<Excluded extends (keyof Builder)[] = [], Arguments extends any[] = []> {
-	protected listener: (ctx: Context<ButtonInteraction, true>) => any | Promise<any> = () => undefined
+	protected listener: (ctx: Context<ButtonInteraction>) => any | Promise<any> = () => undefined
 	protected m_name = ''
 
 	/**
@@ -21,7 +21,7 @@ export default class Builder<Excluded extends (keyof Builder)[] = [], Arguments 
 	/**
 	 * Listen for Events
 	 * @since 1.12.0
-	*/ public listen<Args extends any[]>(callback: (ctx: Context<ButtonInteraction, true>, ...args: Args) => any | Promise<any>): Omit<Builder<[...Excluded, 'listen'], Args>, 'listen' | Excluded[number]> {
+	*/ public listen<Args extends any[]>(callback: (ctx: Context<ButtonInteraction>, ...args: Args) => any | Promise<any>): Omit<Builder<[...Excluded, 'listen'], Args>, 'listen' | Excluded[number]> {
 		this.listener = callback as any
 
 		return this as any
