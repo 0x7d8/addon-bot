@@ -9,7 +9,7 @@ export default new Command()
 		.setDescription('Get basic statistics')
 	)
 	.listen(async(ctx) => {
-		const [ products, links, demos ] = await Promise.all([
+		const [ products, links, demos, activityLogs, tickets ] = await Promise.all([
 			ctx.database.select({
 				count: count(ctx.database.schema.products.name),
 				sum: sum(ctx.database.schema.productProviders.price),
@@ -28,7 +28,13 @@ export default new Command()
 			ctx.database.select({
 				count: count(ctx.database.schema.demoAccesses.id)
 			}).from(ctx.database.schema.demoAccesses)
-				.then((r) => r[0])
+				.then((r) => r[0]),
+			ctx.database.select({
+				count: count(ctx.database.schema.pterodactylActivity.id)
+			}).from(ctx.database.schema.pterodactylActivity)
+				.then((r) => r[0]),
+			ctx.interaction.guild!.channels.fetch()
+				.then((channels) => channels.filter((c) => c?.parent?.name.toLowerCase().includes('tickets')).size)
 		])
 
 		return ctx.interaction.reply({
@@ -64,6 +70,21 @@ export default new Command()
 						{
 							name: '`🔍` Demo Accesses',
 							value: `\`${demos.count}\``,
+							inline: true
+						},
+						{
+							name: '`🦅` Members',
+							value: `\`${ctx.interaction.guild?.memberCount}\``,
+							inline: true
+						},
+						{
+							name: '`📜` Demo Activity Logs',
+							value: `\`${activityLogs.count}\``,
+							inline: true
+						},
+						{
+							name: '`🎫` Open Tickets',
+							value: `\`${tickets}\``,
 							inline: true
 						}
 					])
