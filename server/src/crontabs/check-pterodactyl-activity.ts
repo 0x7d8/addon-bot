@@ -65,10 +65,11 @@ export default new Crontab()
 
 			for (const a of activity) {
 				await client.guilds.cache.get(ctx.env.DISCORD_SERVER)!.channels.fetch(ctx.env.DEMO_CHANNEL)
-					.then((channel) => 'send' in channel! ? channel.send({
+					.then(async(channel) => 'send' in channel! ? channel.send({
 						embeds: [
 							new EmbedBuilder()
 								.setTitle('`🔍` Pterodactyl Activity')
+								.setThumbnail(await client.users.fetch(users.find((u) => u.discordId === a.relationships.actor.attributes!.username.slice(5))?.discordId ?? '123').then((u) => u.displayAvatarURL()).catch(() => null))
 								.setFields([
 									{
 										name: `\`🔍\` Event`,
