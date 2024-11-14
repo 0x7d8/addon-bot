@@ -203,7 +203,7 @@ export default new Command()
 								.leftJoin(ctx.database.schema.productLinks, eq(ctx.database.schema.products.id, ctx.database.schema.productLinks.productId))
 								.where(eq(ctx.database.schema.productLinks.discordId, user.id))
 								.groupBy(ctx.database.schema.productLinks.productId)
-								.then((r) => r[0].count)
+								.then((r) => r[0]?.count ?? 0)
 						])
 
 						if (total < 1) return ctx.interaction.reply({
