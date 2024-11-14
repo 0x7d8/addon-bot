@@ -3,7 +3,6 @@ import { and, count, eq, ilike } from "drizzle-orm"
 import productsButton from "@/bot/buttons/products"
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, InteractionContextType } from "discord.js"
 import linkSourcexchangeButton from "@/bot/buttons/link/sourcexchange"
-import axios from "axios"
 
 export default new Command()
 	.build((builder) => builder
@@ -196,14 +195,14 @@ export default new Command()
 								.leftJoin(ctx.database.schema.productLinks, eq(ctx.database.schema.products.id, ctx.database.schema.productLinks.productId))
 								.where(eq(ctx.database.schema.productLinks.discordId, user.id))
 								.orderBy(ctx.database.schema.products.id)
-								.groupBy(ctx.database.schema.products.id)
+								.groupBy(ctx.database.schema.productLinks.productId)
 								.limit(1),
 							ctx.database.select({
 								count: count(ctx.database.schema.products.id)
 							}).from(ctx.database.schema.products)
 								.leftJoin(ctx.database.schema.productLinks, eq(ctx.database.schema.products.id, ctx.database.schema.productLinks.productId))
 								.where(eq(ctx.database.schema.productLinks.discordId, user.id))
-								.groupBy(ctx.database.schema.products.id)
+								.groupBy(ctx.database.schema.productLinks.productId)
 								.then((r) => r[0].count)
 						])
 
