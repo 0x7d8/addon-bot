@@ -185,7 +185,7 @@ export default new Command()
 						const user = ctx.interaction.options.getUser('user') ?? ctx.interaction.user
 
 						const [ products, total ] = await Promise.all([
-							ctx.database.select({
+							ctx.database.selectDistinct({
 								name: ctx.database.schema.products.name,
 								icon: ctx.database.schema.products.icon,
 								banner: ctx.database.schema.products.banner,
@@ -196,7 +196,7 @@ export default new Command()
 								.where(eq(ctx.database.schema.productLinks.discordId, user.id))
 								.orderBy(ctx.database.schema.products.id)
 								.limit(1),
-							ctx.database.select({
+							ctx.database.selectDistinct({
 								count: count(ctx.database.schema.products.id)
 							}).from(ctx.database.schema.products)
 								.leftJoin(ctx.database.schema.productLinks, eq(ctx.database.schema.products.id, ctx.database.schema.productLinks.productId))

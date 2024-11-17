@@ -48,13 +48,13 @@ const button: Exported<[user: string | null, current: number, type: PaginateType
 			}
 
 			default: {
-				const [ page, total, data ] = await ctx.paginate(current, type, ctx.database.select({
+				const [ page, total, data ] = await ctx.paginate(current, type, ctx.database.selectDistinct({
 					count: count(ctx.database.schema.products.id)
 				}).from(ctx.database.schema.products)
 					.leftJoin(ctx.database.schema.productLinks, eq(ctx.database.schema.products.id, ctx.database.schema.productLinks.productId))
 					.where(eq(ctx.database.schema.productLinks.discordId, user))
 					.then((r) => r[0].count),
-				({ skip, take }) => ctx.database.select({
+				({ skip, take }) => ctx.database.selectDistinct({
 					name: ctx.database.schema.products.name,
 					icon: ctx.database.schema.products.icon,
 					banner: ctx.database.schema.products.banner,
