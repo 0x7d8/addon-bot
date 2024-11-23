@@ -50,6 +50,27 @@
       "when": 1732373361798,
       "tag": "0006_legal_wild_pack",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1732382150893,
+      "tag": "0007_broken_warbound",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1732382819240,
+      "tag": "0008_hesitant_hawkeye",
+      "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1732385718723,
+      "tag": "0009_outstanding_ezekiel",
+      "breakpoints": true
     }
   ]
 }

@@ -1,5 +1,5 @@
 import { sql } from "drizzle-orm"
-import { boolean, char, decimal, text, integer, pgEnum, pgTable, serial, timestamp, uniqueIndex, varchar, index, jsonb, uuid } from "drizzle-orm/pg-core"
+import { boolean, char, decimal, text, integer, pgEnum, pgTable, serial, timestamp, time, uniqueIndex, varchar, index, jsonb, uuid, smallint, smallserial } from "drizzle-orm/pg-core"
 
 export const productProvider = pgEnum('productProvider', ['SOURCEXCHANGE', 'BUILTBYBIT'])
 export const currency = pgEnum('currency', ['EUR', 'USD'])
@@ -104,4 +104,30 @@ export const pterodactylActivity = pgTable('pterodactyl_activity', {
 	uniqueIndex('pterodactylActivity_activity_identifier_idx').on(activity.identifier),
 	index('pterodactylActivity_pterodactylId_idx').on(activity.pterodactylId),
 	index('pterodactylActivity_created_idx').on(activity.created)
+])
+
+export const adventCalendarDays = pgTable('advent_calendar_days', {
+	id: smallserial('id').primaryKey(),
+
+	year: smallint('year').notNull(),
+	day: smallint('day').notNull(),
+	content: text('content').notNull(),
+
+	maxRedeems: smallint('maxRedeems'),
+
+	created: timestamp('created').default(sql`now()`).notNull(),
+	after: time('after')
+}, (calendar) => [
+	uniqueIndex('adventCalendarDays_year_day_idx').on(calendar.year, calendar.day),
+	index('adventCalendarDays_created_idx').on(calendar.created)
+])
+
+export const adventCalendarRedeems = pgTable('advent_calendar_redeems', {
+	calendarDayId: integer('calendarDayId').references(() => adventCalendarDays.id).notNull(),
+	discordId: varchar('discordId', { length: 22 }).notNull(),
+
+	created: timestamp('created').default(sql`now()`).notNull()
+}, (redemption) => [
+	uniqueIndex('adventCalendarRedeems_calendarDayId_discordId_idx').on(redemption.calendarDayId, redemption.discordId),
+	index('adventCalendarRedeems_created_idx').on(redemption.created)
 ])

@@ -1,5 +1,4 @@
 import Command from "@/bot/command"
-import { and, eq, ilike } from "drizzle-orm"
 import { InteractionContextType, PermissionFlagsBits } from "discord.js"
 import axios from "axios"
 
