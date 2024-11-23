@@ -15,12 +15,13 @@ export const products = pgTable('products', {
 	identifier: varchar('identifier', { length: 51 }).notNull().default(sql`gen_random_uuid()`),
 
 	role: varchar('role', { length: 22 }).notNull(),
-}, (products) => ({
-	nameIndex: uniqueIndex('name_idx').on(products.name),
-	identifierIndex: uniqueIndex('identifier_idx').on(products.identifier)
-}))
+}, (products) => [
+	uniqueIndex('products_name_idx').on(products.name),
+	uniqueIndex('products_identifier_idx').on(products.identifier),
+	uniqueIndex('products_role_idx').on(products.role)
+])
 
-export const productProviders = pgTable('productProviders', {
+export const productProviders = pgTable('product_providers', {
 	id: serial('id').primaryKey(),
 	productId: integer('productId').references(() => products.id).notNull(),
 
@@ -30,11 +31,11 @@ export const productProviders = pgTable('productProviders', {
 	link: varchar('link', { length: 255 }).notNull(),
 	price: decimal('price', { precision: 10, scale: 2 }).notNull(),
 	currency: currency('currency').notNull()
-}, (productProviders) => ({
-	productIdProviderIndex: uniqueIndex('productId_provider_idx').on(productProviders.productId, productProviders.provider)
-}))
+}, (productProviders) => [
+	uniqueIndex('productProviders_productId_provider_idx').on(productProviders.productId, productProviders.provider)
+])
 
-export const productLinks = pgTable('productLinks', {
+export const productLinks = pgTable('product_links', {
 	id: serial('id').primaryKey(),
 	productId: integer('productId').references(() => products.id).notNull(),
 	providerId: integer('providerId').references(() => productProviders.id).notNull(),
@@ -43,12 +44,12 @@ export const productLinks = pgTable('productLinks', {
 	paymentId: varchar('paymentId', { length: 51 }).notNull(),
 
 	created: timestamp('created').default(sql`now()`).notNull()
-}, (productLinks) => ({
-	paymentIdIndex: uniqueIndex('paymentId_idx').on(productLinks.paymentId),
-	discordIdProductIdProviderIdIndex: uniqueIndex('discordId_productId_providerId_idx').on(productLinks.discordId, productLinks.productId, productLinks.providerId)
-}))
+}, (productLinks) => [
+	uniqueIndex('productLinks_paymentId_idx').on(productLinks.paymentId),
+	uniqueIndex('productLinks_discordId_productId_providerId_idx').on(productLinks.discordId, productLinks.productId, productLinks.providerId)
+])
 
-export const demoAccesses = pgTable('demoAccesses', {
+export const demoAccesses = pgTable('demo_accesses', {
 	id: serial('id').primaryKey(),
 
 	expired: boolean('expired').default(false).notNull(),
@@ -57,21 +58,23 @@ export const demoAccesses = pgTable('demoAccesses', {
 	discordId: varchar('discordId', { length: 22 }).notNull(),
 
 	created: timestamp('created').default(sql`now()`).notNull()
-}, (demoAccess) => ({
-	pterodatylIdIndex: uniqueIndex('pterodactylId_idx').on(demoAccess.pterodactylId),
-	discordIdIndex: index('discordId_idx').on(demoAccess.discordId)
-}))
+}, (demoAccesses) => [
+	uniqueIndex('demoAccesses_pterodactylId_idx').on(demoAccesses.pterodactylId),
+	index('demoAccesses_discordId_idx').on(demoAccesses.discordId),
+	index('demoAccesses_expired_idx').on(demoAccesses.expired),
+	index('demoAccesses_created_idx').on(demoAccesses.created)
+])
 
-export const sendMessages = pgTable('sendMessages', {
+export const sendMessages = pgTable('send_messages', {
 	id: serial('id').primaryKey(),
 
 	enabled: boolean('enabled').default(true).notNull(),
 	discordId: varchar('discordId', { length: 22 }),
 	discordChannelId: varchar('discordChannelId', { length: 22 }).notNull(),
 	message: text('message').notNull()
-}, (sendMessage) => ({
-	discordIdIndex: uniqueIndex('discordChannelId_discordId_idx').on(sendMessage.discordChannelId, sendMessage.discordId)
-}))
+}, (sendMessage) => [
+	uniqueIndex('sendMessages_discordChannelId_discordId_idx').on(sendMessage.discordChannelId, sendMessage.discordId)
+])
 
 export const faqs = pgTable('faqs', {
 	id: serial('id').primaryKey(),
@@ -81,11 +84,13 @@ export const faqs = pgTable('faqs', {
 
 	created: timestamp('created').default(sql`now()`).notNull(),
 	updated: timestamp('updated').default(sql`now()`).notNull()
-}, (faq) => ({
-	titleIndex: uniqueIndex('title_idx').on(faq.title)
-}))
+}, (faq) => [
+	uniqueIndex('faqs_title_idx').on(faq.title),
+	index('faqs_created_idx').on(faq.created),
+	index('faqs_updated_idx').on(faq.updated)
+])
 
-export const pterodactylActivity = pgTable('pterodactylActivity', {
+export const pterodactylActivity = pgTable('pterodactyl_activity', {
 	id: serial('id').primaryKey(),
 	pterodactylId: integer('pterodactylId').references(() => demoAccesses.pterodactylId, { onDelete: 'set null' }),
 	pterodactylServerId: uuid('pterodactylServerId').notNull(),
@@ -95,6 +100,8 @@ export const pterodactylActivity = pgTable('pterodactylActivity', {
 	properties: jsonb('properties').notNull(),
 
 	created: timestamp('created').default(sql`now()`).notNull()
-}, (activity) => ({
-	identifierIndex: uniqueIndex('activity_identifier_idx').on(activity.identifier)
-}))
+}, (activity) => [
+	uniqueIndex('pterodactylActivity_activity_identifier_idx').on(activity.identifier),
+	index('pterodactylActivity_pterodactylId_idx').on(activity.pterodactylId),
+	index('pterodactylActivity_created_idx').on(activity.created)
+])
