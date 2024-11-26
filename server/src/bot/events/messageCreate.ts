@@ -3,7 +3,7 @@ import { ChannelType, Message } from "discord.js"
 import axios from "axios"
 import { size } from "@rjweb/utils"
 import { recognize } from "tesseract.js"
-import { and, sql } from "drizzle-orm"
+import { and, eq, sql } from "drizzle-orm"
 
 const commonFileExtensions: Record<string, string> = Object.freeze({
 	'txt': 'text/plain',
@@ -80,6 +80,7 @@ export default new Event()
 				})
 					.from(ctx.database.schema.automaticErrors)
 					.where(and(
+						eq(ctx.database.schema.automaticErrors.enabled, true),
 						sql`${error} ~* ${ctx.database.schema.automaticErrors.allowedRegex}`,
 						sql`${error} !~* COALESCE(${ctx.database.schema.automaticErrors.disallowedRegex}, 'a')`
 					))

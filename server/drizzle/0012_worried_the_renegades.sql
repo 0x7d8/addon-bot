@@ -1,0 +1,1 @@
+ALTER TABLE "automatic_errors" ADD COLUMN "enabled" boolean DEFAULT true NOT NULL;

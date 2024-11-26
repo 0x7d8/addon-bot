@@ -137,6 +137,8 @@ export const automaticErrors = pgTable('automatic_errors', {
 
 	allowedRegex: varchar('allowed_regex', { length: 255 }).notNull(),
 	disallowedRegex: varchar('disallowed_regex', { length: 255 }),
+
+	enabled: boolean('enabled').default(true).notNull(),
 	content: text('content').notNull(),
 
 	created: timestamp('created').default(sql`now()`).notNull()
