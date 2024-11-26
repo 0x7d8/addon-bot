@@ -80,8 +80,8 @@ export default new Event()
 				})
 					.from(ctx.database.schema.automaticErrors)
 					.where(and(
-						sql`${error} SIMILAR TO ${ctx.database.schema.automaticErrors.allowedRegex}`,
-						sql`${error} NOT SIMILAR TO COALESCE(${ctx.database.schema.automaticErrors.disallowedRegex}, 'a')`
+						sql`${error} ~* ${ctx.database.schema.automaticErrors.allowedRegex}`,
+						sql`${error} !~* COALESCE(${ctx.database.schema.automaticErrors.disallowedRegex}, 'a')`
 					))
 					.limit(1)
 					.then((r) => r[0])
