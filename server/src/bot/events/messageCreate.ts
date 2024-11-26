@@ -74,6 +74,15 @@ export default new Event()
 				})).then((words) => words.join(' '))
 			}
 
+			const pastes = error.match(/https:\/\/pastes\.dev\/[a-zA-Z0-9]+/g)
+			if (pastes?.length) {
+				error += await Promise.all(pastes.map(async(p) => {
+					const { data } = await axios.get<string>(p.replace('pastes.dev', 'api.pastes.dev'))
+
+					return data
+				})).then((contents) => contents.join(' '))
+			}
+
 			if (error.length > 5) {
 				const errorResolution = await ctx.database.select({
 					content: ctx.database.schema.automaticErrors.content
@@ -82,7 +91,7 @@ export default new Event()
 					.where(and(
 						eq(ctx.database.schema.automaticErrors.enabled, true),
 						sql`${error} ~* ${ctx.database.schema.automaticErrors.allowedRegex}`,
-						sql`${error} !~* COALESCE(${ctx.database.schema.automaticErrors.disallowedRegex}, 'a')`
+						sql`${error} !~* COALESCE(${ctx.database.schema.automaticErrors.disallowedRegex}, '^$^')`
 					))
 					.limit(1)
 					.then((r) => r[0])
