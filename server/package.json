@@ -1,11 +1,11 @@
 {
-  "version": "1.9.0",
+  "version": "1.10.0",
   "license": "UNLICENSED",
   "scripts": {
     "build": "rm -rf lib && esbuild `find src \\( -name '*.ts' -o -name '*.tsx' \\)` --platform='node' --sourcemap --ignore-annotations --format='cjs' --target='es2022' --outdir='lib' && esbuild src/index.ts --platform='node' --sourcemap --ignore-annotations --format='cjs' --target='es2022' --outdir='lib' --banner:js='require(\"module-alias\").addAlias(\"@\", __dirname);'",
     "kit": "drizzle-kit",
     "lint": "tsc",
-    "dev": "pnpm build && cd lib && NODE_ENV=development node --enable-source-maps index && cd .."
+    "dev": "pnpm build && cd lib && NODE_ENV=development node --no-deprecation --enable-source-maps index && cd .."
   },
   "dependencies": {
     "@rjweb/runtime-node": "^1.1.1",
@@ -20,6 +20,7 @@
     "node-cron": "^3.0.3",
     "pg": "^8.13.1",
     "rjweb-server": "^9.8.4",
+    "tesseract.js": "^5.1.1",
     "zod": "^3.23.8"
   },
   "devDependencies": {

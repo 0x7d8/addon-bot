@@ -1,4 +1,4 @@
 cd /app/server
 
 cd lib
-exec node --enable-source-maps index.js
+exec node --no-deprecation --enable-source-maps index.js

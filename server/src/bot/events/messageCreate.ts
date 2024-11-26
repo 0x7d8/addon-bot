@@ -1,7 +1,9 @@
 import Event from "@/bot/event"
-import { Message } from "discord.js"
+import { ChannelType, Message } from "discord.js"
 import axios from "axios"
 import { size } from "@rjweb/utils"
+import { recognize } from "tesseract.js"
+import { and, sql } from "drizzle-orm"
 
 const commonFileExtensions: Record<string, string> = Object.freeze({
 	'txt': 'text/plain',
@@ -57,5 +59,39 @@ export default new Event()
 				content: urls.map(([name, url]) => `[\`${name} ↗\`](<${url}>)`).join(' '),
 				allowedMentions: { repliedUser: false }
 			})
+		}
+
+		if (ctx.interaction.channel.type === ChannelType.GuildText && ctx.interaction.channel.parent?.name.toLowerCase().includes('tickets')) {
+			let error = ctx.interaction.content.concat(' ')
+
+			const images = ctx.interaction.attachments.filter((a) => a.width && a.size < size(10).mb())
+			if (images.size) {
+				error += await Promise.all(images.map(async(a) => {
+					const { data: buffer } = await axios.get<Buffer>(a.url, { responseType: 'arraybuffer' }),
+						{ data: { words } } = await recognize(buffer, 'eng')
+
+					return words.map((w) => w.text).join(' ')
+				})).then((words) => words.join(' '))
+			}
+
+			if (error.length > 5) {
+				const errorResolution = await ctx.database.select({
+					content: ctx.database.schema.automaticErrors.content
+				})
+					.from(ctx.database.schema.automaticErrors)
+					.where(and(
+						sql`${error} SIMILAR TO ${ctx.database.schema.automaticErrors.allowedRegex}`,
+						sql`${error} NOT SIMILAR TO COALESCE(${ctx.database.schema.automaticErrors.disallowedRegex}, 'a')`
+					))
+					.limit(1)
+					.then((r) => r[0])
+
+				if (errorResolution) {
+					await ctx.interaction.reply({
+						content: errorResolution.content,
+						allowedMentions: { repliedUser: false }
+					})
+				}
+			}
 		}
 	})

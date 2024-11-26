@@ -72,8 +72,8 @@ export const sendMessages = pgTable('send_messages', {
 	discordId: varchar('discordId', { length: 22 }),
 	discordChannelId: varchar('discordChannelId', { length: 22 }).notNull(),
 	message: text('message').notNull()
-}, (sendMessage) => [
-	uniqueIndex('sendMessages_discordChannelId_discordId_idx').on(sendMessage.discordChannelId, sendMessage.discordId)
+}, (sendMessages) => [
+	uniqueIndex('sendMessages_discordChannelId_discordId_idx').on(sendMessages.discordChannelId, sendMessages.discordId)
 ])
 
 export const faqs = pgTable('faqs', {
@@ -84,10 +84,10 @@ export const faqs = pgTable('faqs', {
 
 	created: timestamp('created').default(sql`now()`).notNull(),
 	updated: timestamp('updated').default(sql`now()`).notNull()
-}, (faq) => [
-	uniqueIndex('faqs_title_idx').on(faq.title),
-	index('faqs_created_idx').on(faq.created),
-	index('faqs_updated_idx').on(faq.updated)
+}, (faqs) => [
+	uniqueIndex('faqs_title_idx').on(faqs.title),
+	index('faqs_created_idx').on(faqs.created),
+	index('faqs_updated_idx').on(faqs.updated)
 ])
 
 export const pterodactylActivity = pgTable('pterodactyl_activity', {
@@ -100,10 +100,10 @@ export const pterodactylActivity = pgTable('pterodactyl_activity', {
 	properties: jsonb('properties').notNull(),
 
 	created: timestamp('created').default(sql`now()`).notNull()
-}, (activity) => [
-	uniqueIndex('pterodactylActivity_activity_identifier_idx').on(activity.identifier),
-	index('pterodactylActivity_pterodactylId_idx').on(activity.pterodactylId),
-	index('pterodactylActivity_created_idx').on(activity.created)
+}, (activities) => [
+	uniqueIndex('pterodactylActivity_activity_identifier_idx').on(activities.identifier),
+	index('pterodactylActivity_pterodactylId_idx').on(activities.pterodactylId),
+	index('pterodactylActivity_created_idx').on(activities.created)
 ])
 
 export const adventCalendarDays = pgTable('advent_calendar_days', {
@@ -117,9 +117,9 @@ export const adventCalendarDays = pgTable('advent_calendar_days', {
 
 	created: timestamp('created').default(sql`now()`).notNull(),
 	after: time('after')
-}, (calendar) => [
-	uniqueIndex('adventCalendarDays_year_day_idx').on(calendar.year, calendar.day),
-	index('adventCalendarDays_created_idx').on(calendar.created)
+}, (calendarDays) => [
+	uniqueIndex('adventCalendarDays_year_day_idx').on(calendarDays.year, calendarDays.day),
+	index('adventCalendarDays_created_idx').on(calendarDays.created)
 ])
 
 export const adventCalendarRedeems = pgTable('advent_calendar_redeems', {
@@ -127,7 +127,20 @@ export const adventCalendarRedeems = pgTable('advent_calendar_redeems', {
 	discordId: varchar('discordId', { length: 22 }).notNull(),
 
 	created: timestamp('created').default(sql`now()`).notNull()
-}, (redemption) => [
-	uniqueIndex('adventCalendarRedeems_calendarDayId_discordId_idx').on(redemption.calendarDayId, redemption.discordId),
-	index('adventCalendarRedeems_created_idx').on(redemption.created)
+}, (redeems) => [
+	uniqueIndex('adventCalendarRedeems_calendarDayId_discordId_idx').on(redeems.calendarDayId, redeems.discordId),
+	index('adventCalendarRedeems_created_idx').on(redeems.created)
+])
+
+export const automaticErrors = pgTable('automatic_errors', {
+	id: serial('id').primaryKey(),
+
+	allowedRegex: varchar('allowed_regex', { length: 255 }).notNull(),
+	disallowedRegex: varchar('disallowed_regex', { length: 255 }),
+	content: text('content').notNull(),
+
+	created: timestamp('created').default(sql`now()`).notNull()
+}, (errors) => [
+	uniqueIndex('automaticErrors_allowedRegex_idx').on(errors.allowedRegex),
+	index('automaticErrors_created_idx').on(errors.created)
 ])
