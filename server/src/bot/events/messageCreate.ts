@@ -76,7 +76,7 @@ export default new Event()
 
 			const pastes = error.match(/https:\/\/pastes\.dev\/[a-zA-Z0-9]+/g)
 			if (pastes?.length) {
-				error += await Promise.all(pastes.map(async(p) => {
+				error += await Promise.all(pastes.slice(0, 3).map(async(p) => {
 					const { data } = await axios.get<string>(p.replace('pastes.dev', 'api.pastes.dev'))
 
 					return data
