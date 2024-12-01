@@ -53,7 +53,10 @@ export default new Command()
 
 			if (time > Date.now()) return ctx.interaction.reply({
 				ephemeral: true,
-				content: '`🔍` The reward for today is not available yet. Check back in a bit!'
+				content: ctx.join(
+					'`🔍` The reward for today will be made available later. Check back in a bit!',
+					'-# This is likely a bigger reward.'
+				)
 			})
 		}
 
