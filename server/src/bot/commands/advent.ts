@@ -49,7 +49,7 @@ export default new Command()
 		})
 
 		if (reward.after) {
-			const time = new Date(`${new Date().toTimeString()} ${reward.after}`).getTime()
+			const time = new Date(`${new Date().toDateString()} ${reward.after}`).getTime()
 
 			if (time > Date.now()) return ctx.interaction.reply({
 				ephemeral: true,
