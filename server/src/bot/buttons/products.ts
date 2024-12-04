@@ -55,6 +55,7 @@ const button: Exported<[user: string | null, current: number, type: PaginateType
 					.where(eq(ctx.database.schema.productLinks.discordId, user))
 					.then((r) => r[0].count),
 				({ skip, take }) => ctx.database.selectDistinct({
+					id: ctx.database.schema.products.id,
 					name: ctx.database.schema.products.name,
 					icon: ctx.database.schema.products.icon,
 					banner: ctx.database.schema.products.banner,
