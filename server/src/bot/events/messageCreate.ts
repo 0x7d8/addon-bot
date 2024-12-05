@@ -97,10 +97,7 @@ export default new Event()
 					.then((r) => r[0])
 
 				if (errorResolution) {
-					await ctx.interaction.reply({
-						content: errorResolution.content,
-						allowedMentions: { repliedUser: false }
-					})
+					await ctx.interaction.reply(errorResolution.content)
 				}
 			}
 		}
