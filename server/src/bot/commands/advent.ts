@@ -1,5 +1,5 @@
 import Command from "@/bot/command"
-import { time } from "@rjweb/utils"
+import { number, time } from "@rjweb/utils"
 import { InteractionContextType } from "discord.js"
 import { and, count, eq, sql } from "drizzle-orm"
 
@@ -31,7 +31,7 @@ export default new Command()
 			})
 		}
 
-		cooldowns.set(ctx.interaction.user.id, Date.now() + time(30).s())
+		cooldowns.set(ctx.interaction.user.id, Date.now() + time(number.generate(30, 60)).s())
 
 		const month = new Date().getMonth() + 1
 		if (month !== 12) return ctx.interaction.reply({
