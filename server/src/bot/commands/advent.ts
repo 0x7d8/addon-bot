@@ -1,6 +1,15 @@
 import Command from "@/bot/command"
+import { time } from "@rjweb/utils"
 import { InteractionContextType } from "discord.js"
 import { and, count, eq, sql } from "drizzle-orm"
+
+const cooldowns = new Map<string, number>()
+
+setInterval(() => {
+	for (const [ id, cooldown ] of cooldowns) {
+		if (cooldown < Date.now()) cooldowns.delete(id)
+	}
+}, time(1).m())
 
 export default new Command()
 	.build((builder) => builder
@@ -13,6 +22,17 @@ export default new Command()
 		)
 	)
 	.listen(async(ctx) => {
+		if (cooldowns.has(ctx.interaction.user.id)) {
+			const cooldown = cooldowns.get(ctx.interaction.user.id)!
+
+			if (cooldown > Date.now()) return ctx.interaction.reply({
+				ephemeral: true,
+				content: `\`⏳\` You are on cooldown, please try again <t:${Math.ceil(cooldown / 1000)}:R>.`
+			})
+		}
+
+		cooldowns.set(ctx.interaction.user.id, Date.now() + time(30).s())
+
 		const month = new Date().getMonth() + 1
 		if (month !== 12) return ctx.interaction.reply({
 			ephemeral: true,
