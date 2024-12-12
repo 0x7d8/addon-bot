@@ -71,7 +71,9 @@ export const sendMessages = pgTable('send_messages', {
 	enabled: boolean('enabled').default(true).notNull(),
 	discordId: varchar('discordId', { length: 22 }),
 	discordChannelId: varchar('discordChannelId', { length: 22 }).notNull(),
-	message: text('message').notNull()
+	message: text('message').notNull(),
+	icon: varchar('icon', { length: 255 }),
+	image: varchar('image', { length: 255 })
 }, (sendMessages) => [
 	uniqueIndex('sendMessages_discordChannelId_discordId_idx').on(sendMessages.discordChannelId, sendMessages.discordId)
 ])

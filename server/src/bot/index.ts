@@ -316,7 +316,9 @@ async function main() {
 			id: database.schema.sendMessages.id,
 			discordId: database.schema.sendMessages.discordId,
 			discordChannelId: database.schema.sendMessages.discordChannelId,
-			message: database.schema.sendMessages.message
+			message: database.schema.sendMessages.message,
+			icon: database.schema.sendMessages.icon,
+			image: database.schema.sendMessages.image
 		})
 			.from(database.schema.sendMessages)
 			.where(eq(database.schema.sendMessages.enabled, true))
@@ -339,6 +341,8 @@ async function main() {
 						embeds: [
 							new EmbedBuilder()
 								.setDescription(sendMessage.message)
+								.setImage(sendMessage.image)
+								.setThumbnail(sendMessage.icon)
 						]
 					}).catch(() => null)
 				} else {
