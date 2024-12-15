@@ -134,5 +134,5 @@ export type Activity = {
 		}
 	})
 
-	return data.data.data.map((activity: any) => activity.attributes)
+	return data.data.data.map((activity: any) => activity.attributes).sort((a: any, b: any) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
 }
