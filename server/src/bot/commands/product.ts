@@ -252,7 +252,10 @@ export default new Command()
 
 						await Promise.all([
 							ctx.database.delete(ctx.database.schema.productLinks)
-								.where(eq(ctx.database.schema.productLinks.productId, link.productId)),
+								.where(and(
+									eq(ctx.database.schema.productLinks.productId, link.productId),
+									eq(ctx.database.schema.productLinks.discordId, ctx.interaction.user.id)
+								)),
 							ctx.interaction.guild!.members.fetch(ctx.interaction.user.id)
 								.then((member) => member.roles.remove(link.role))
 						])
