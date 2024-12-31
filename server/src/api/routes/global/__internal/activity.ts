@@ -27,39 +27,43 @@ export = new globalAPIRouter.Path('/')
 
 			if (!discordId) return ctr.print({})
 
-			await client.guilds.cache.get(ctr["@"].env.DISCORD_SERVER)!.channels.fetch(ctr["@"].env.DEMO_CHANNEL)
-				.then(async(channel) => 'send' in channel! ? channel.send({
-					embeds: [
-						new EmbedBuilder()
-							.setTitle('`🔍` Pterodactyl Activity')
-							.setThumbnail(await client.users.fetch(discordId).then((u) => u.displayAvatarURL()).catch(() => null))
-							.setFields([
-								{
-									name: `\`🔍\` Event`,
-									value: `\`${data.event}\``,
-									inline: true
-								},
-								{
-									name: `\`👤\` User`,
-									value: `<@${discordId}>`,
-									inline: true
-								},
-								{
-									name: `\`🔗\` Server`,
-									value: data.server ? `[\`${data.server.name}\`](<${ctr["@"].env.PTERO_URL}/server/${data.server.uuid.slice(0, 8)})` : '`none`',
-									inline: true
-								},
-								...Object.keys(data.properties).length ? [{
-									name: '`📄` Properties',
-									value: string.limit(ctr["@"].join(
-										'```json',
-										JSON.stringify(data.properties, null, 2),
-										'```'
-									), 1000)
-								}] : []
-							])
-							.setTimestamp(new Date(data.timestamp))
-					]
-				}) : null)
+			setImmediate(async() =>
+				await client.guilds.cache.get(ctr["@"].env.DISCORD_SERVER)!.channels.fetch(ctr["@"].env.DEMO_CHANNEL)
+					.then(async(channel) => 'send' in channel! ? channel.send({
+						embeds: [
+							new EmbedBuilder()
+								.setTitle('`🔍` Pterodactyl Activity')
+								.setThumbnail(await client.users.fetch(discordId).then((u) => u.displayAvatarURL()).catch(() => null))
+								.setFields([
+									{
+										name: `\`🔍\` Event`,
+										value: `\`${data.event}\``,
+										inline: true
+									},
+									{
+										name: `\`👤\` User`,
+										value: `<@${discordId}>`,
+										inline: true
+									},
+									{
+										name: `\`🔗\` Server`,
+										value: data.server ? `[\`${data.server.name}\`](<${ctr["@"].env.PTERO_URL}/server/${data.server.uuid.slice(0, 8)})` : '`none`',
+										inline: true
+									},
+									...Object.keys(data.properties).length ? [{
+										name: '`📄` Properties',
+										value: string.limit(ctr["@"].join(
+											'```json',
+											JSON.stringify(data.properties, null, 2),
+											'```'
+										), 1000)
+									}] : []
+								])
+								.setTimestamp(new Date(data.timestamp))
+						]
+					}) : null)
+			)
+
+			return ctr.print({})
 		})
 	)
