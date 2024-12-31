@@ -1,0 +1,1 @@
+DROP TABLE "pterodactyl_activity" CASCADE;

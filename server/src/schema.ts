@@ -92,22 +92,6 @@ export const faqs = pgTable('faqs', {
 	index('faqs_updated_idx').on(faqs.updated)
 ])
 
-export const pterodactylActivity = pgTable('pterodactyl_activity', {
-	id: serial('id').primaryKey(),
-	pterodactylId: integer('pterodactylId').references(() => demoAccesses.pterodactylId, { onDelete: 'set null' }),
-	pterodactylServerId: uuid('pterodactylServerId').notNull(),
-
-	identifier: char('identifier', { length: 40 }).notNull(),
-	event: varchar('event', { length: 121 }).notNull(),
-	properties: jsonb('properties').notNull(),
-
-	created: timestamp('created').default(sql`now()`).notNull()
-}, (activities) => [
-	uniqueIndex('pterodactylActivity_activity_identifier_idx').on(activities.identifier),
-	index('pterodactylActivity_pterodactylId_idx').on(activities.pterodactylId),
-	index('pterodactylActivity_created_idx').on(activities.created)
-])
-
 export const adventCalendarDays = pgTable('advent_calendar_days', {
 	id: smallserial('id').primaryKey(),
 
