@@ -9,14 +9,14 @@ RUN apt update && \
 
 RUN npm i -g pnpm --force
 
-COPY ./server/package.json /app/server/package.json
-COPY ./server/pnpm-lock.yaml /app/server/pnpm-lock.yaml
+COPY ./package.json /app/server/package.json
+COPY ./pnpm-lock.yaml /app/server/pnpm-lock.yaml
 
 RUN cd /app/server && \
     pnpm install --frozen-lockfile
 
-COPY ./server/src /app/server/src
-COPY ./server/tsconfig.json /app/server/tsconfig.json
+COPY ./src /app/server/src
+COPY ./tsconfig.json /app/server/tsconfig.json
 
 RUN cd /app/server && \
     pnpm build

@@ -132,3 +132,20 @@ export const automaticErrors = pgTable('automatic_errors', {
 	uniqueIndex('automaticErrors_allowedRegex_idx').on(errors.allowedRegex),
 	index('automaticErrors_created_idx').on(errors.created)
 ])
+
+export const supportDataPoints = pgTable('support_data_points', {
+  id: serial('id').primaryKey(),
+  key: varchar('key', { length: 100 }).notNull().unique(),
+  question: text('question').notNull(),
+  priority: integer('priority').notNull(),
+  possibleValues: jsonb('possible_values').$type<string[]>().notNull()
+})
+
+export const supportMatchers = pgTable('support_matchers', {
+  id: serial('id').primaryKey(),
+  name: varchar('name', { length: 200 }).notNull(),
+  conditions: jsonb('conditions').$type<{ key: string, values: string[] }[]>().notNull(),
+  solution: text('solution').notNull(),
+  priority: integer('priority').default(100),
+  category: varchar('category', { length: 50 }).notNull()
+})
