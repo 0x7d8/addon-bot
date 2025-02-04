@@ -60,7 +60,7 @@ export default new Button()
 					'`⚒️` Your ticket has been closed.',
 					'',
 					'> **Transcript**',
-					`> [View Transcript](${transcriptUrl})`
+					`> [\`View Transcript\`](${transcriptUrl})`
 				)
 			})
 		])
