@@ -30,8 +30,8 @@ importers:
         specifier: ^1.7.9
         version: 1.7.9
       discord-html-transcripts:
-        specifier: github:ItzDerock/discord-html-transcripts#39c52c4
-        version: https://codeload.github.com/ItzDerock/discord-html-transcripts/tar.gz/39c52c4(discord.js@14.17.3(bufferutil@4.0.9)(utf-8-validate@6.0.5))
+        specifier: github:0x7d8/discord-html-transcripts#b81d826
+        version: https://codeload.github.com/0x7d8/discord-html-transcripts/tar.gz/b81d826(discord.js@14.17.3(bufferutil@4.0.9)(utf-8-validate@6.0.5))
       discord.js:
         specifier: ^14.17.3
         version: 14.17.3(bufferutil@4.0.9)(utf-8-validate@6.0.5)
@@ -1374,8 +1374,8 @@ packages:
   discord-api-types@0.37.119:
     resolution: {integrity: sha512-WasbGFXEB+VQWXlo6IpW3oUv73Yuau1Ig4AZF/m13tXcTKnMpc/mHjpztIlz4+BM9FG9BHQkEXiPto3bKduQUg==}
 
-  discord-html-transcripts@https://codeload.github.com/ItzDerock/discord-html-transcripts/tar.gz/39c52c4:
-    resolution: {tarball: https://codeload.github.com/ItzDerock/discord-html-transcripts/tar.gz/39c52c4}
+  discord-html-transcripts@https://codeload.github.com/0x7d8/discord-html-transcripts/tar.gz/b81d826:
+    resolution: {tarball: https://codeload.github.com/0x7d8/discord-html-transcripts/tar.gz/b81d826}
     version: 3.2.0
     peerDependencies:
       discord.js: ^14.0.0 || ^15.0.0
@@ -3657,7 +3657,7 @@ snapshots:
 
   discord-api-types@0.37.119: {}
 
-  discord-html-transcripts@https://codeload.github.com/ItzDerock/discord-html-transcripts/tar.gz/39c52c4(discord.js@14.17.3(bufferutil@4.0.9)(utf-8-validate@6.0.5)):
+  discord-html-transcripts@https://codeload.github.com/0x7d8/discord-html-transcripts/tar.gz/b81d826(discord.js@14.17.3(bufferutil@4.0.9)(utf-8-validate@6.0.5)):
     dependencies:
       '@derockdev/discord-components-core': 3.6.1
       '@derockdev/discord-components-react': 3.6.1(react-dom@0.0.0-experimental-6639ed3b3-20240111(react@0.0.0-experimental-6639ed3b3-20240111))(react@0.0.0-experimental-6639ed3b3-20240111)
