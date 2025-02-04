@@ -50,7 +50,7 @@ export default new Button()
 
 		const transcriptUrl = await ctx.s3.url(`${s3Key}/index.html`, transcript, 'text/html')
 
-		await Promise.all([
+		await Promise.allSettled([
 			ctx.database.update(ctx.database.schema.tickets)
 				.set({ transcript: transcriptUrl, closed: new Date() })
 				.where(eq(ctx.database.schema.tickets.id, ticket.id)),
@@ -64,6 +64,34 @@ export default new Button()
 				)
 			})
 		])
+
+		const logChannel = await ctx.client.channels.fetch(ctx.env.TICKET_LOG_CHANNEL)
+		if (logChannel?.isSendable()) {
+			await logChannel.send({
+				embeds: [
+					ctx.Embed()
+						.setTitle('`⚒️` Ticket Closed')
+						.setThumbnail(ctx.interaction.user.displayAvatarURL())
+						.setFields([
+							{
+								name: 'User',
+								value: `<@${ticket.discordId}>`,
+								inline: true
+							},
+							{
+								name: 'Transcript',
+								value: `[\`View Transcript\`](${transcriptUrl})`,
+								inline: true
+							},
+							{
+								name: 'Closer',
+								value: `<@${ctx.interaction.user.id}>`,
+								inline: true
+							}
+						])
+				]
+			})
+		}
 
 		ctx.support.closingTickets.delete(ticket.id)
 	})

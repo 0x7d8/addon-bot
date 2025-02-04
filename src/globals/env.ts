@@ -37,6 +37,7 @@ const infos = z.object({
 	S3_SECRET_KEY: z.string().optional(),
 
 	TICKET_CATEGORY: z.string(),
+	TICKET_LOG_CHANNEL: z.string(),
 	DEMO_CHANNEL: z.string(),
 	DEMO_ROLE: z.string(),
 	CUSTOMER_ROLE: z.string(),
