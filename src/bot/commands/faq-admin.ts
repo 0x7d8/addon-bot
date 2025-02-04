@@ -1,5 +1,5 @@
 import Command from "@/bot/command"
-import { InteractionContextType, PermissionFlagsBits } from "discord.js"
+import { InteractionContextType, MessageFlags, PermissionFlagsBits } from "discord.js"
 import { eq, ilike } from "drizzle-orm"
 import addFaqModal from "@/bot/modals/faq/add"
 import updateFaqModal from "@/bot/modals/faq/update"
@@ -52,16 +52,20 @@ export default new Command()
 					.then((r) => r[0])
 
 				if (!data) return ctx.interaction.reply({
-					ephemeral: true,
-					content: '`🔍` FAQ not found.'
+					content: '`🔍` FAQ not found.',
+					flags: [
+						MessageFlags.Ephemeral
+					]
 				})
 
 				await ctx.database.delete(ctx.database.schema.faqs)
 					.where(eq(ctx.database.schema.faqs.id, faq))
 
 				return ctx.interaction.reply({
-					ephemeral: true,
-					content: '`✅` FAQ removed.'
+					content: '`✅` FAQ removed.',
+					flags: [
+						MessageFlags.Ephemeral
+					]
 				})
 			}
 
@@ -76,8 +80,10 @@ export default new Command()
 					.then((r) => r[0])
 
 				if (!data) return ctx.interaction.reply({
-					ephemeral: true,
-					content: '`🔍` FAQ not found.'
+					content: '`🔍` FAQ not found.',
+					flags: [
+						MessageFlags.Ephemeral
+					]
 				})
 
 				return ctx.interaction.showModal(await updateFaqModal(ctx.interaction, [data.id], [data.id]))

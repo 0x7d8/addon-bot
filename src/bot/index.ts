@@ -1,8 +1,11 @@
-import { AutocompleteInteraction, ChatInputCommandInteraction, Client, DiscordAPIError, EmbedBuilder, GatewayIntentBits, version } from "discord.js"
+import { ActionRowBuilder, AutocompleteInteraction, ButtonBuilder, ButtonStyle, ChatInputCommandInteraction, Client, DiscordAPIError, EmbedBuilder, GatewayIntentBits, MessageCreateOptions, MessageEditOptions, MessagePayload, version } from "discord.js"
 import { filesystem } from "@rjweb/utils"
 import * as Sentry from "@sentry/node"
 import * as customid from "@/globals/customid"
 import logger from "@/globals/logger"
+import database from "@/globals/database"
+import openTicketButton from "@/bot/buttons/tickets/open"
+import { eq } from "drizzle-orm"
 import env from "@/globals/env"
 
 import Context from "@/bot/context"
@@ -10,8 +13,7 @@ import Event from "@/bot/event"
 import Command from "@/bot/command"
 import Button from "@/bot/button"
 import Modal from "@/bot/modal"
-import database from "@/globals/database"
-import { eq } from "drizzle-orm"
+import Select from "@/bot/select"
 
 const startTime = performance.now()
 export const client = new Client({
@@ -26,6 +28,7 @@ const events: Event[] = []
 const commands: Command[] = []
 const buttons: Button[] = []
 const modals: Modal[] = []
+const selects: Select[] = []
 
 function parseOptions(options: (AutocompleteInteraction | ChatInputCommandInteraction)['options']) {
 	const output: Record<string, string> = {}
@@ -254,6 +257,58 @@ client.on('interactionCreate', async(interaction) => {
 			.text(`${modal['m_name']}`, (c) => c.cyan)
 			.text(`(${(performance.now() - startTime).toFixed(1)}ms)`, (c) => c.gray)
 			.info()
+	} else if (interaction.isStringSelectMenu()) {
+		if (!interaction.guildId) return
+
+		const decoded = await customid.decode(interaction.client.user.id, interaction.customId)
+		if (!decoded) return
+
+		const [ name, ...listenerArgs ] = decoded.split('°').filter(Boolean)
+
+		const select = selects.find((select) => select['m_name'] === name)
+		if (!select) return
+
+		const listenerOptions = listenerArgs.map((arg) => JSON.parse(arg.replace(/%C2%B0|%5E/g, (c) => decodeURIComponent(c))))
+
+		transaction.setName(`select {${select['m_name']}}`)
+		transaction.setAttributes({
+			listenerOptions: JSON.stringify(listenerOptions)
+		})
+
+		const context = new Context(interaction, scope)
+		context['startTime'] = startTime
+
+		error: try {
+			await Promise.resolve((select['listener'] as any)(context, ...listenerOptions))
+		} catch (error: any) {
+			if (error instanceof DiscordAPIError) {
+				if (error.code === 10062) break error
+			}
+
+			if (typeof error !== 'string') logger()
+				.text('Discord Modal Error')
+				.text('\n')
+				.text(error.stack ?? error.toString(), (c) => c.red)
+				.error()
+
+			if (typeof error !== 'string') Sentry.captureException(error, scope)
+
+			try {
+				await interaction.reply({
+					ephemeral: true,
+					content: typeof error === 'string' ? error : '`⚠️` An error occurred while processing the select.'
+				})
+			} catch { }
+		} finally {
+			transaction.finish()
+		}
+
+		logger()
+			.text('DISCORD MODAL', (c) => c.blue)
+			.text(':')
+			.text(`${select['m_name']}`, (c) => c.cyan)
+			.text(`(${(performance.now() - startTime).toFixed(1)}ms)`, (c) => c.gray)
+			.info()
 	}
 })
 
@@ -262,7 +317,8 @@ async function main() {
 		Promise.all([ ...filesystem.getFiles(`${__dirname}/events`, { recursive: true }).filter((file) => file.endsWith('js')).map(async(file) => events.push((await import(file)).default.default)) ]),
 		Promise.all([ ...filesystem.getFiles(`${__dirname}/commands`, { recursive: true }).filter((file) => file.endsWith('js')).map(async(file) => commands.push((await import(file)).default.default)) ]),
 		Promise.all([ ...filesystem.getFiles(`${__dirname}/buttons`, { recursive: true }).filter((file) => file.endsWith('js')).map(async(file) => buttons.push((await import(file)).default.default)) ]),
-		Promise.all([ ...filesystem.getFiles(`${__dirname}/modals`, { recursive: true }).filter((file) => file.endsWith('js')).map(async(file) => modals.push((await import(file)).default.default)) ])
+		Promise.all([ ...filesystem.getFiles(`${__dirname}/modals`, { recursive: true }).filter((file) => file.endsWith('js')).map(async(file) => modals.push((await import(file)).default.default)) ]),
+		Promise.all([ ...filesystem.getFiles(`${__dirname}/selects`, { recursive: true }).filter((file) => file.endsWith('js')).map(async(file) => selects.push((await import(file)).default.default)) ])
 	])
 
 	for (const event of events) {
@@ -318,7 +374,8 @@ async function main() {
 			discordChannelId: database.schema.sendMessages.discordChannelId,
 			message: database.schema.sendMessages.message,
 			icon: database.schema.sendMessages.icon,
-			image: database.schema.sendMessages.image
+			image: database.schema.sendMessages.image,
+			ticket: database.schema.sendMessages.ticket
 		})
 			.from(database.schema.sendMessages)
 			.where(eq(database.schema.sendMessages.enabled, true))
@@ -333,30 +390,36 @@ async function main() {
 			const channel = await client.channels.fetch(sendMessage.discordChannelId).catch(() => null)
 			if (!channel || !channel.isSendable()) continue
 
+			const data: MessageCreateOptions & MessageEditOptions = {
+				embeds: [
+					new EmbedBuilder()
+						.setDescription(sendMessage.message)
+						.setImage(sendMessage.image)
+						.setThumbnail(sendMessage.icon)
+				], components: !sendMessage.ticket ? [] : [
+					new ActionRowBuilder()
+						.addComponents(
+							new ButtonBuilder()
+								.setLabel('Open Ticket')
+								.setStyle(ButtonStyle.Primary)
+								.setEmoji('1150889684227076227')
+								.setCustomId('ticket-open')
+						) as any
+				]
+			}
+
 			if (sendMessage.discordId) {
 				const message = await channel.messages.fetch(sendMessage.discordId).catch(() => null)
 
 				if (message) {
-					await message.edit({
-						embeds: [
-							new EmbedBuilder()
-								.setDescription(sendMessage.message)
-								.setImage(sendMessage.image)
-								.setThumbnail(sendMessage.icon)
-						]
-					}).catch(() => null)
+					await message.edit(data).catch(() => null)
 				} else {
 					sendMessage.discordId = null
 				}
 			}
 
 			if (!sendMessage.discordId) {
-				const message = await channel.send({
-					embeds: [
-						new EmbedBuilder()
-							.setDescription(sendMessage.message)
-					]
-				})
+				const message = await channel.send(data)
 
 				await database.update(database.schema.sendMessages)
 					.set({ discordId: message.id })

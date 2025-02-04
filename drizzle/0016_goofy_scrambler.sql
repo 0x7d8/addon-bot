@@ -1,0 +1,1 @@
+ALTER TABLE "support_matchers" DROP COLUMN "category";

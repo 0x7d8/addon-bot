@@ -30,7 +30,7 @@ export default new Command()
 			}).from(ctx.database.schema.demoAccesses)
 				.then((r) => r[0]),
 			ctx.interaction.guild!.channels.fetch()
-				.then((channels) => channels.filter((c) => c?.parent?.name.toLowerCase().includes('tickets')).size)
+				.then((channels) => channels.filter((c) => c?.parent?.id === ctx.env.TICKET_CATEGORY).size)
 		])
 
 		return ctx.interaction.reply({

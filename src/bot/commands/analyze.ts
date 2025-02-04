@@ -1,5 +1,5 @@
 import Command from "@/bot/command"
-import { InteractionContextType, PermissionFlagsBits } from "discord.js"
+import { InteractionContextType, MessageFlags, PermissionFlagsBits } from "discord.js"
 import axios from "axios"
 
 type ProductResponse = {
@@ -41,9 +41,10 @@ export default new Command()
 				products = await ctx.database.select({
 					name: ctx.database.schema.products.name,
 					identifier: ctx.database.schema.products.identifier
-				}).from(ctx.database.schema.products)
+				})
+					.from(ctx.database.schema.products)
 
-			await ctx.interaction.deferReply({ ephemeral: true })
+			await ctx.interaction.deferReply({ flags: [MessageFlags.Ephemeral] })
 
 			const detected: [typeof products[0], boolean, ProductResponse | string, typeof ctx.database.schema.productProvider.enumValues[number]][] = await Promise.all(products.map(async(product) => {
 				const response = await retry(() => axios.get<string | ProductResponse>(`${parsed.origin}/extensions/${product.identifier}`))
@@ -93,8 +94,10 @@ export default new Command()
 			})
 		} catch {
 			return ctx.interaction.reply({
-				ephemeral: true,
-				content: '`🔗` Invalid URL.'
+				content: '`🔗` Invalid URL.',
+				flags: [
+					MessageFlags.Ephemeral
+				]
 			})
 		}
 	})

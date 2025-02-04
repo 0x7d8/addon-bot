@@ -1,6 +1,6 @@
 import Command from "@/bot/command"
 import { number, time } from "@rjweb/utils"
-import { InteractionContextType } from "discord.js"
+import { InteractionContextType, MessageFlags } from "discord.js"
 import { and, count, eq, sql } from "drizzle-orm"
 
 const cooldowns = new Map<string, number>()
@@ -26,8 +26,10 @@ export default new Command()
 			const cooldown = cooldowns.get(ctx.interaction.user.id)!
 
 			if (cooldown > Date.now()) return ctx.interaction.reply({
-				ephemeral: true,
-				content: `\`⏳\` You are on cooldown, please try again <t:${Math.ceil(cooldown / 1000)}:R>.`
+				content: `\`⏳\` You are on cooldown, please try again <t:${Math.ceil(cooldown / 1000)}:R>.`,
+				flags: [
+					MessageFlags.Ephemeral
+				]
 			})
 		}
 
@@ -35,15 +37,19 @@ export default new Command()
 
 		const month = new Date().getMonth() + 1
 		if (month !== 12) return ctx.interaction.reply({
-			ephemeral: true,
-			content: '`🔍` The advent calendar is only available in December.'
+			content: '`🔍` The advent calendar is only available in December.',
+			flags: [
+				MessageFlags.Ephemeral
+			]
 		})
 
 		const day = new Date().getUTCDate()
 
 		if (day >= 25) return ctx.interaction.reply({
-			ephemeral: true,
-			content: '`🔍` The advent calendar has ended, see you again next year!'
+			content: '`🔍` The advent calendar has ended, see you again next year!',
+			flags: [
+				MessageFlags.Ephemeral
+			]
 		})
 
 		const reward = await ctx.database.select({
@@ -64,19 +70,22 @@ export default new Command()
 			.then((r) => r[0])
 
 		if (!reward) return ctx.interaction.reply({
-			ephemeral: true,
-			content: '`🔍` There is no reward available for today.'
+			content: '`🔍` There is no reward available for today.',
+			flags: [
+				MessageFlags.Ephemeral
+			]
 		})
 
 		if (reward.after) {
 			const time = new Date(`${new Date().toDateString()} ${reward.after}`).getTime()
 
 			if (time > Date.now()) return ctx.interaction.reply({
-				ephemeral: true,
 				content: ctx.join(
 					'`🔍` The reward for today will be made available later. Check back in a bit!',
 					'-# This is likely a bigger reward.'
-				)
+				), flags: [
+					MessageFlags.Ephemeral
+				]
 			})
 		}
 
@@ -91,24 +100,24 @@ export default new Command()
 				.then((r) => r[0])
 
 			if (!didRedeem) return ctx.interaction.reply({
-				ephemeral: true,
-				content: `\`🔍\` The reward for today has already been redeemed ${reward.maxRedeems} times.`
+				content: `\`🔍\` The reward for today has already been redeemed ${reward.maxRedeems} times.`,
+				flags: [
+					MessageFlags.Ephemeral
+				]
 			})
 		}
 
 		await ctx.database.insert(ctx.database.schema.adventCalendarRedeems)
-			.values({
-				calendarDayId: reward.id,
-				discordId: ctx.interaction.user.id
-			})
+			.values({ calendarDayId: reward.id, discordId: ctx.interaction.user.id })
 			.onConflictDoNothing()
 
 		return ctx.interaction.reply({
-			ephemeral: true,
 			content: ctx.join(
 				`\`🎉\` Reward redeemed for Day ${day}!`,
 				'',
 				reward.content
-			)
+			), flags: [
+				MessageFlags.Ephemeral
+			]
 		})
 	})

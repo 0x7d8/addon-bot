@@ -7,14 +7,10 @@ export default new Event()
 	.listenTo((events) => events.ClientReady)
 	.listen(async(ctx) => {
 		while (true) {
-			ctx.client.user.setActivity(`${await ctx.database.select({
-				count: count(ctx.database.schema.products.name)
-			}).from(ctx.database.schema.products).then((r) => r[0].count)} Products`, { type: ActivityType.Watching })
+			ctx.client.user.setActivity(`${await ctx.database.select({ c: count() }).from(ctx.database.schema.products).then((r) => r[0].c)} Products`, { type: ActivityType.Watching })
 			await time.wait(time(10).s())
 
-			ctx.client.user.setActivity(`${await ctx.database.select({
-				count: count(ctx.database.schema.productLinks.id)
-			}).from(ctx.database.schema.productLinks).then((r) => r[0].count)} Linked Purchases`, { type: ActivityType.Watching })
+			ctx.client.user.setActivity(`${await ctx.database.select({ c: count() }).from(ctx.database.schema.productLinks).then((r) => r[0].c)} Linked Purchases`, { type: ActivityType.Watching })
 			await time.wait(time(10).s())
 
 			ctx.client.user.setActivity(`${ctx.client.ws.ping}ms Bot Ping`, { type: ActivityType.Watching })

@@ -1,5 +1,5 @@
 import Modal from "@/bot/modal"
-import { TextInputBuilder, TextInputStyle } from "discord.js"
+import { MessageFlags, TextInputBuilder, TextInputStyle } from "discord.js"
 
 export default new Modal()
 	.setName('add-faq')
@@ -37,23 +37,23 @@ export default new Modal()
 
 		try {
 			await ctx.database.insert(ctx.database.schema.faqs)
-				.values({
-					title,
-					content
-				})
+				.values({ title, content })
 
 			return ctx.interaction.reply({
-				ephemeral: true,
-				content: '`✅` FAQ has been added.'
+				content: '`✅` FAQ has been added.',
+				flags: [
+					MessageFlags.Ephemeral
+				]
 			})
 		} catch {
 			return ctx.interaction.reply({
-				ephemeral: true,
 				content: '`❌` This Title is already taken.',
 				embeds: [
 					ctx.Embed()
 						.setTitle(title)
 						.setDescription(content)
+				], flags: [
+					MessageFlags.Ephemeral
 				]
 			})
 		}

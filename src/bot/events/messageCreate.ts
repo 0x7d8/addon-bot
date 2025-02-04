@@ -1,9 +1,10 @@
 import Event from "@/bot/event"
-import { ChannelType, Message } from "discord.js"
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle, ChannelType, Message } from "discord.js"
 import axios from "axios"
 import { size } from "@rjweb/utils"
 import { recognize } from "tesseract.js"
 import { and, eq, sql } from "drizzle-orm"
+import diagnose from "../buttons/tickets/open"
 
 const commonFileExtensions: Record<string, string> = Object.freeze({
 	'txt': 'text/plain',
@@ -61,43 +62,49 @@ export default new Event()
 			})
 		}
 
-		if (ctx.interaction.channel.type === ChannelType.GuildText && ctx.interaction.channel.parent?.name.toLowerCase().includes('tickets')) {
+		if (ctx.interaction.content === 's!diagnose') {
+			await ctx.interaction.reply({
+				components: [
+					new ActionRowBuilder()
+						.addComponents(
+							new ButtonBuilder()
+								.setLabel('sus')
+								.setStyle(ButtonStyle.Primary)
+								.setCustomId(diagnose(ctx.interaction))
+						) as any
+				]
+			})
+		}
+
+		if (ctx.interaction.channel.type === ChannelType.GuildText) {
 			let error = ctx.interaction.content.concat(' ')
 
 			const images = ctx.interaction.attachments.filter((a) => a.width && a.size < size(10).mb())
 			if (images.size) {
 				error += await Promise.all(images.map(async(a) => {
 					const { data: buffer } = await axios.get<Buffer>(a.url, { responseType: 'arraybuffer' }),
-						{ data: { words } } = await recognize(buffer, 'eng')
+						data = await recognize(buffer, 'eng')
 
-					return words.map((w) => w.text).join(' ')
+					return data.data.text
 				})).then((words) => words.join(' '))
 			}
 
 			const pastes = error.match(/https:\/\/pastes\.dev\/[a-zA-Z0-9]+/g)
 			if (pastes?.length) {
 				error += await Promise.all(pastes.slice(0, 3).map(async(p) => {
-					const { data } = await axios.get<string>(p.replace('pastes.dev', 'api.pastes.dev'))
+					const data = await axios.get<string>(p.replace('pastes.dev', 'api.pastes.dev'), {
+						maxContentLength: size(2.5).mb()
+					}).catch(() => null)
 
-					return data
+					return data?.data
 				})).then((contents) => contents.join(' '))
 			}
 
 			if (error.length > 5) {
-				const errorResolution = await ctx.database.select({
-					content: ctx.database.schema.automaticErrors.content
-				})
-					.from(ctx.database.schema.automaticErrors)
-					.where(and(
-						eq(ctx.database.schema.automaticErrors.enabled, true),
-						sql`${error} ~* ${ctx.database.schema.automaticErrors.allowedRegex}`,
-						sql`${error} !~* COALESCE(${ctx.database.schema.automaticErrors.disallowedRegex}, '^$^')`
-					))
-					.limit(1)
-					.then((r) => r[0])
+				const errorResolution = await ctx.support.findSolutionToAutomaicError(error)
 
 				if (errorResolution) {
-					await ctx.interaction.reply(errorResolution.content)
+					await ctx.interaction.reply(errorResolution)
 				}
 			}
 		}

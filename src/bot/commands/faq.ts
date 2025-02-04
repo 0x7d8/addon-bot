@@ -1,5 +1,5 @@
 import Command from "@/bot/command"
-import { InteractionContextType } from "discord.js"
+import { InteractionContextType, MessageFlags } from "discord.js"
 import { eq, ilike } from "drizzle-orm"
 
 export default new Command()
@@ -26,8 +26,10 @@ export default new Command()
 			.then((r) => r[0])
 
 		if (!data) return ctx.interaction.reply({
-			ephemeral: true,
-			content: '`🔍` FAQ not found.'
+			content: '`🔍` FAQ not found.',
+			flags: [
+				MessageFlags.Ephemeral
+			]
 		})
 
 		return ctx.interaction.reply({

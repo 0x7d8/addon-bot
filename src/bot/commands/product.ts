@@ -1,7 +1,7 @@
 import Command from "@/bot/command"
 import { and, count, eq, ilike } from "drizzle-orm"
 import productsButton from "@/bot/buttons/products"
-import { ActionRowBuilder, ButtonBuilder, ButtonStyle, InteractionContextType } from "discord.js"
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle, InteractionContextType, MessageFlags } from "discord.js"
 import linkSourcexchangeButton from "@/bot/buttons/link/sourcexchange"
 
 export default new Command()
@@ -57,7 +57,6 @@ export default new Command()
 				switch (ctx.interaction.options.getSubcommand()) {
 					case "sourcexchange": {
 						return ctx.interaction.reply({
-							ephemeral: true,
 							embeds: [
 								ctx.Embed()
 									.setTitle('`🔗` Link Purchase')
@@ -75,6 +74,8 @@ export default new Command()
 											.setStyle(ButtonStyle.Primary)
 											.setCustomId(linkSourcexchangeButton(ctx.interaction))
 									) as any
+							], flags: [
+								MessageFlags.Ephemeral
 							]
 						})
 					}
@@ -206,8 +207,10 @@ export default new Command()
 						])
 
 						if (total < 1) return ctx.interaction.reply({
-							ephemeral: true,
-							content: '`🔗` No Products linked.'
+							content: '`🔗` No Products linked.',
+							flags: [
+								MessageFlags.Ephemeral
+							]
 						})
 
 						return ctx.interaction.reply({
@@ -244,8 +247,10 @@ export default new Command()
 							.then((r) => r[0])
 
 						if (!link) return ctx.interaction.reply({
-							ephemeral: true,
-							content: '`🔗` Product not linked.'
+							content: '`🔗` Product not linked.',
+							flags: [
+								MessageFlags.Ephemeral
+							]
 						})
 
 						await ctx.interaction.deferReply({ ephemeral: true })

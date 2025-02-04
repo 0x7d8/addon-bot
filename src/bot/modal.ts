@@ -1,8 +1,8 @@
-import { ActionRowBuilder, ButtonInteraction, ChatInputCommandInteraction, ModalActionRowComponentBuilder, ModalBuilder, ModalSubmitInteraction } from "discord.js"
+import { ActionRowBuilder, ButtonInteraction, ChatInputCommandInteraction, ModalActionRowComponentBuilder, ModalBuilder, ModalSubmitInteraction, StringSelectMenuInteraction } from "discord.js"
 import Context from "@/bot/context"
 import * as customid from "@/globals/customid"
 
-export type Exported<Args extends any[] = [], ListenerArgs extends any[] = []> = (interaction: ButtonInteraction | ChatInputCommandInteraction, args: Args, listenerArgs: ListenerArgs) => Promise<ModalBuilder>
+export type Exported<Args extends any[] = [], ListenerArgs extends any[] = []> = (interaction: ButtonInteraction | ChatInputCommandInteraction | StringSelectMenuInteraction, args: Args, listenerArgs: ListenerArgs) => Promise<ModalBuilder>
 
 class RowBuilder {
 	protected rows: ((builder: ActionRowBuilder<ModalActionRowComponentBuilder>) => any)[] = []

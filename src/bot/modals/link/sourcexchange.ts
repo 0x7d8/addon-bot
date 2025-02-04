@@ -1,5 +1,5 @@
 import Modal from "@/bot/modal"
-import { TextInputBuilder, TextInputStyle } from "discord.js"
+import { MessageFlags, TextInputBuilder, TextInputStyle } from "discord.js"
 import { and, count, eq } from "drizzle-orm"
 
 export default new Modal()
@@ -31,19 +31,25 @@ export default new Modal()
 			.then((r) => r[0].count)
 
 		if (links > 0) return ctx.interaction.reply({
-			ephemeral: true,
-			content: '`🔗` This Transaction ID is already linked.'
+			content: '`🔗` This Transaction ID is already linked.',
+			flags: [
+				MessageFlags.Ephemeral
+			]
 		})
 
 		const payment = await ctx.sourcexchange.payment(transactionId)
 		if (!payment) return ctx.interaction.reply({
-			ephemeral: true,
-			content: '`🔗` Purchase not found.'
+			content: '`🔗` Purchase not found.',
+			flags: [
+				MessageFlags.Ephemeral
+			]
 		})
 
 		if (payment.status !== 'completed') return ctx.interaction.reply({
-			ephemeral: true,
-			content: '`🔗` This Payment has not been completed.'
+			content: '`🔗` This Payment has not been completed.',
+			flags: [
+				MessageFlags.Ephemeral
+			]
 		})
 
 		const product = await ctx.database.select({
@@ -61,8 +67,10 @@ export default new Modal()
 			.then((r) => r[0])
 
 		if (!product) return ctx.interaction.reply({
-			ephemeral: true,
-			content: '`🔗` Product not found, make sure this product is from me.'
+			content: '`🔗` Product not found, make sure this product is from me.',
+			flags: [
+				MessageFlags.Ephemeral
+			]
 		})
 
 		await ctx.interaction.deferReply({ ephemeral: true })

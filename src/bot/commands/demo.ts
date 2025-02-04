@@ -1,6 +1,6 @@
 import Command from "@/bot/command"
 import { number, string, time } from "@rjweb/utils"
-import { InteractionContextType } from "discord.js"
+import { InteractionContextType, MessageFlags } from "discord.js"
 import { eq, and } from "drizzle-orm"
 
 export default new Command()
@@ -19,7 +19,6 @@ export default new Command()
 
 		const active = demoAccesses.find((access) => !access.expired)
 		if (active) return ctx.interaction.reply({
-			ephemeral: true,
 			content: ctx.join(
 				'`🔍` You already have an active demo account.',
 				`expires <t:${Math.floor((active.created.getTime() + time(1).h()) / 1000)}:R>`,
@@ -30,15 +29,18 @@ export default new Command()
 				`username: demo.${ctx.interaction.user.id}`,
 				`password: ${active.password}`,
 				'```'
-			)
+			), flags: [
+				MessageFlags.Ephemeral
+			]
 		})
 
 		if (demoAccesses.some((access) => access.created.getTime() > Date.now() - time(1).d())) return ctx.interaction.reply({
-			ephemeral: true,
 			content: ctx.join(
 				'`🔍` You have already requested a demo account in the last 24 hours, please wait or ask in a ticket.',
 				`you can request a new one in <t:${Math.floor((demoAccesses.find((access) => access.created.getTime() > Date.now() - time(1).d())!.created.getTime() + time(1).d()) / 1000)}:R>`
-			)
+			), flags: [
+				MessageFlags.Ephemeral
+			]
 		})
 
 		const password = string.generate({
@@ -53,7 +55,7 @@ export default new Command()
 					pterodactylId: -number.generate(0, 100000),
 					password
 				}),
-			ctx.interaction.deferReply({ ephemeral: true })
+			ctx.interaction.deferReply({ flags: [MessageFlags.Ephemeral] })
 		])
 
 		const id = await ctx.pterodactyl.createUser(ctx.interaction.user, password)

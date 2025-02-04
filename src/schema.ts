@@ -73,7 +73,9 @@ export const sendMessages = pgTable('send_messages', {
 	discordChannelId: varchar('discordChannelId', { length: 22 }).notNull(),
 	message: text('message').notNull(),
 	icon: varchar('icon', { length: 255 }),
-	image: varchar('image', { length: 255 })
+	image: varchar('image', { length: 255 }),
+
+	ticket: boolean('ticket').default(false).notNull(),
 }, (sendMessages) => [
 	uniqueIndex('sendMessages_discordChannelId_discordId_idx').on(sendMessages.discordChannelId, sendMessages.discordId)
 ])
@@ -144,8 +146,22 @@ export const supportDataPoints = pgTable('support_data_points', {
 export const supportMatchers = pgTable('support_matchers', {
   id: serial('id').primaryKey(),
   name: varchar('name', { length: 200 }).notNull(),
-  conditions: jsonb('conditions').$type<{ key: string, values: string[] }[]>().notNull(),
+  conditions: jsonb('conditions').$type<Record<string, string[]>>().notNull(),
   solution: text('solution').notNull(),
-  priority: integer('priority').default(100),
-  category: varchar('category', { length: 50 }).notNull()
+  priority: integer('priority').default(100).notNull()
 })
+
+export const tickets = pgTable('tickets', {
+	id: serial('id').primaryKey(),
+	discordId: varchar('discordId', { length: 22 }).notNull(),
+	channelId: varchar('channelId', { length: 22 }).notNull(),
+
+	transcript: varchar('transcript', { length: 255 }),
+	notes: text('notes').notNull(),
+
+	closed: timestamp('closed'),
+	created: timestamp('created').default(sql`now()`).notNull()
+}, (tickets) => [
+	uniqueIndex('tickets_channelId_idx').on(tickets.channelId),
+	index('tickets_discordId_idx').on(tickets.discordId)
+])

@@ -6,6 +6,8 @@ import env from "@/globals/env"
 import * as sourcexchange from "@/globals/sourcexchange"
 import * as builtbybit from "@/globals/builtbybit"
 import * as pterodactyl from "@/globals/pterodactyl"
+import * as support from "@/globals/support"
+import s3 from "@/globals/s3"
 import { Scope } from "@sentry/node"
 import logger from "@/globals/logger"
 import CustomEmbed from "@/bot/classes/CustomEmbed"
@@ -138,6 +140,14 @@ export default class Context<Interaction extends any> {
 	 * The Pterodactyl API Client
 	 * @since 1.1.0
 	*/ public pterodactyl = pterodactyl
+	/**
+	 * Support Utilities
+	 * @since 1.12.0
+	*/ public support = support
+	/**
+	 * The S3 Client
+	 * @since 1.12.0
+	*/ public s3 = s3
 	/**
 	 * The Sentry Scope
 	 * @since 1.0.0

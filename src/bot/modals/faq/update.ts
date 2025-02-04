@@ -1,5 +1,5 @@
 import Modal from "@/bot/modal"
-import { TextInputBuilder, TextInputStyle } from "discord.js"
+import { MessageFlags, TextInputBuilder, TextInputStyle } from "discord.js"
 import { eq } from "drizzle-orm"
 import database from "@/globals/database"
 
@@ -52,17 +52,20 @@ export default new Modal()
 				.where(eq(ctx.database.schema.faqs.id, id))
 
 			return ctx.interaction.reply({
-				ephemeral: true,
-				content: '`✅` FAQ has been updated.'
+				content: '`✅` FAQ has been updated.',
+				flags: [
+					MessageFlags.Ephemeral
+				]
 			})
 		} catch {
 			return ctx.interaction.reply({
-				ephemeral: true,
 				content: '`❌` This Title is already taken.',
 				embeds: [
 					ctx.Embed()
 						.setTitle(title)
 						.setDescription(content)
+				], flags: [
+					MessageFlags.Ephemeral
 				]
 			})
 		}
