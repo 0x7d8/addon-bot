@@ -1,5 +1,5 @@
 import env from "@/globals/env"
-import { time } from "@rjweb/utils"
+import { number, time } from "@rjweb/utils"
 import axios from "axios"
 
 const cache = new Map<string, number>()
@@ -8,7 +8,8 @@ const cache = new Map<string, number>()
  * Get Accesses for a Product
  * @since 1.2.0
 */ export async function access(product: number, member: number) {
-	await time.wait(time(100).ms())
+	await time.wait(time(number.generate(10, 700)).ms())
+
 	const { data } = await axios.get<{
 		data: {
 			license_id: number
