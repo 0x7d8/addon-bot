@@ -104,8 +104,7 @@ export default new Command()
 
 							let count = 0
 							for (let i = 0; i < products.length; i++) {
-								const accesses = await ctx.builtbybit.accesses(products[i].productProviderProductId!)
-								const access = accesses.find((access) => access.purchaser_id === user)
+								const access = await ctx.builtbybit.access(products[i].productProviderProductId!, user)
 
 								if (!access || products[i].paymentId) continue
 

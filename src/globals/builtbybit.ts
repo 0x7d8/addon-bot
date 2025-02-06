@@ -2,37 +2,25 @@ import env from "@/globals/env"
 import { time } from "@rjweb/utils"
 import axios from "axios"
 
-const cache = new Map<number, {
-	license_id: number
-	purchaser_id: number
-	start_date: number
-}[]>()
-
-const cache2 = new Map<string, number>()
+const cache = new Map<string, number>()
 
 /**
  * Get Accesses for a Product
  * @since 1.2.0
-*/ export async function accesses(product: number) {
-	const cached = cache.get(product)
-	if (cached) return cached
-
+*/ export async function access(product: number, member: number) {
 	await time.wait(time(100).ms())
 	const { data } = await axios.get<{
 		data: {
 			license_id: number
 			purchaser_id: number
 			start_date: number
-		}[]
-	}>(`https://api.builtbybit.com/v1/resources/${product}/licenses`, {
+		}
+	}>(`https://api.builtbybit.com/v1/resources/${product}/licenses/members/${member}`, {
 		headers: {
 			Authorization: `Private ${env.BBB_TOKEN}`,
 			Accept: 'application/json'
 		}
 	})
-
-	cache.set(product, data.data)
-	setTimeout(() => cache.delete(product), time(2).m())
 
 	return data.data
 }
@@ -41,7 +29,7 @@ const cache2 = new Map<string, number>()
  * Get User by Discord Id
  * @since 1.3.0
 */ export async function user(discord: string): Promise<number> {
-	const cached = cache2.get(discord)
+	const cached = cache.get(discord)
 	if (cached) return cached
 
 	const { data } = await axios.get<{
@@ -55,7 +43,7 @@ const cache2 = new Map<string, number>()
 		}
 	})
 
-	if (data.data.member_id) cache2.set(discord, data.data.member_id)
+	if (data.data.member_id) cache.set(discord, data.data.member_id)
 
 	return data.data.member_id
 }
