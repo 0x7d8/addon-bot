@@ -81,7 +81,7 @@ export default new Command()
 					}
 
 					case "builtbybit": {
-						await ctx.interaction.deferReply({ ephemeral: true })
+						await ctx.interaction.deferReply({ flags: [MessageFlags.Ephemeral] })
 
 						try {
 							const user = await ctx.builtbybit.user(ctx.interaction.user.id)

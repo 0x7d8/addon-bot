@@ -8,7 +8,7 @@ const cache = new Map<string, number>()
  * Get Accesses for a Product
  * @since 1.2.0
 */ export async function access(product: number, member: number) {
-	await time.wait(time(number.generate(10, 700)).ms())
+	await time.wait(time(number.generate(10, 300)).ms())
 
 	const { data } = await axios.get<{
 		data: {
@@ -21,9 +21,9 @@ const cache = new Map<string, number>()
 			Authorization: `Private ${env.BBB_TOKEN}`,
 			Accept: 'application/json'
 		}
-	})
+	}).catch(() => ({ data: null }))
 
-	return data.data
+	return data?.data || null
 }
 
 /**
