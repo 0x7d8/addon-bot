@@ -1,6 +1,6 @@
-# addon-bot - Discord Support Bot
+# bot - Discord Support Bot
 
-addon-bot is a simple discord bot that I use for my personal support
+bot is a simple discord bot that is used on the 0x7f6 support
 discord server, it is based around product selling on bbb & sxc.
 
 ## Developing
@@ -8,9 +8,9 @@ discord server, it is based around product selling on bbb & sxc.
 To Develop on this bot, you need to install all required dependencies
 
 ```bash
-git clone https://github.com/0x7d8/addon-bot.git
+git clone https://github.com/0x7f6/bot.git
 
-cd addon-bot/server
+cd bot
 
 # make sure to have nodejs installed already
 npm i -g pnpm
