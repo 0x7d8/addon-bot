@@ -6,6 +6,7 @@ export = new globalAPIRouter.Path('/')
 		.onRequest(async(ctr) => {
 			const products = await ctr["@"].cache.use('products', () => ctr["@"].database.select({
 					id: ctr["@"].database.schema.products.id,
+					identifier: ctr["@"].database.schema.products.identifier,
 					name: ctr["@"].database.schema.products.name,
 					version: ctr["@"].database.schema.products.version,
 					icon: ctr["@"].database.schema.products.icon,

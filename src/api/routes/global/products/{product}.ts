@@ -5,11 +5,12 @@ import { desc, eq } from "drizzle-orm"
 export = new globalAPIRouter.Path('/')
 	.http('GET', '/', (http) => http
 		.onRequest(async(ctr) => {
-			const product = parseInt(ctr.params.get('product', '0'))
-			if (!product || isNaN(product) || product < 1) return ctr.status(ctr.$status.BAD_REQUEST).print({ success: false, errors: ['Invalid product'] })
+			const product = ctr.params.get('product', '0')
+			const int = parseInt(product)
 
 			const [ data ] = await ctr["@"].cache.use(`product::${product}`, () => ctr["@"].database.select({
 					id: ctr["@"].database.schema.products.id,
+					identifier: ctr["@"].database.schema.products.identifier,
 					name: ctr["@"].database.schema.products.name,
 					version: ctr["@"].database.schema.products.version,
 					icon: ctr["@"].database.schema.products.icon,
@@ -17,7 +18,10 @@ export = new globalAPIRouter.Path('/')
 					summary: ctr["@"].database.schema.products.summary
 				})
 					.from(ctr["@"].database.schema.products)
-					.where(eq(ctr["@"].database.schema.products.id, product))
+					.where(isNaN(int)
+						? eq(ctr["@"].database.schema.products.identifier, product)
+						: eq(ctr["@"].database.schema.products.id, int)
+					)
 					.limit(1),
 				time(5).m()
 			)
@@ -32,14 +36,14 @@ export = new globalAPIRouter.Path('/')
 					currency: ctr["@"].database.schema.productProviders.currency
 				})
 					.from(ctr["@"].database.schema.productProviders)
-					.where(eq(ctr["@"].database.schema.productProviders.productId, product)),
+					.where(eq(ctr["@"].database.schema.productProviders.productId, data.id)),
 				ctr["@"].database.select({
 					version: ctr["@"].database.schema.productChangelogs.version,
 					content: ctr["@"].database.schema.productChangelogs.content,
 					created: ctr["@"].database.schema.productChangelogs.created
 				})
 					.from(ctr["@"].database.schema.productChangelogs)
-					.where(eq(ctr["@"].database.schema.productChangelogs.productId, product))
+					.where(eq(ctr["@"].database.schema.productChangelogs.productId, data.id))
 					.orderBy(desc(ctr["@"].database.schema.productChangelogs.created))
 			]), time(5).m())
 
