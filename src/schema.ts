@@ -35,6 +35,19 @@ export const productProviders = pgTable('product_providers', {
 	uniqueIndex('productProviders_productId_provider_idx').on(productProviders.productId, productProviders.provider)
 ])
 
+export const productChangelogs = pgTable('product_changelogs', {
+	productId: integer('productId').references(() => products.id).notNull(),
+	version: varchar('version', { length: 51 }).notNull(),
+
+	content: text('content').notNull(),
+
+	created: timestamp('created').default(sql`now()`).notNull()
+}, (productChangelogs) => [
+	uniqueIndex('productChangelogs_productId_version_idx').on(productChangelogs.productId, productChangelogs.version),
+	index('productChangelogs_productId_idx').on(productChangelogs.productId),
+	index('productChangelogs_created_idx').on(productChangelogs.created)
+])
+
 export const productLinks = pgTable('product_links', {
 	id: serial('id').primaryKey(),
 	productId: integer('productId').references(() => products.id).notNull(),

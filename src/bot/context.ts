@@ -3,6 +3,7 @@ import { client } from "@/bot"
 import getVersion from "@/index"
 import database from "@/globals/database"
 import env from "@/globals/env"
+import cache from "@/globals/cache"
 import * as sourcexchange from "@/globals/sourcexchange"
 import * as builtbybit from "@/globals/builtbybit"
 import * as pterodactyl from "@/globals/pterodactyl"
@@ -124,6 +125,10 @@ export default class Context<Interaction extends any> {
 	 * The Prisma Database Connection
 	 * @since 1.0.0
 	*/ public database = database
+	/**
+	 * The Cache Helper
+	 * @since 1.13.0
+	*/ public cache = cache
 	/**
 	 * The Logger Helper
 	 * @since 1.0.0

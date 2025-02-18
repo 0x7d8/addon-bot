@@ -52,11 +52,11 @@ export = new globalAPIRouter.Path('/')
 									},
 									...Object.keys(data.properties).length ? [{
 										name: '`📄` Properties',
-										value: string.limit(ctr["@"].join(
+										value: ctr["@"].join(
 											'```json',
-											JSON.stringify(data.properties, null, 2),
+											string.limit(JSON.stringify(data.properties, null, 2), 1000),
 											'```'
-										), 1000)
+										)
 									}] : []
 								])
 								.setTimestamp(new Date(data.timestamp))

@@ -13,6 +13,7 @@ try {
 }
 
 const infos = z.object({
+	REDIS_URL: z.string(),
 	DATABASE_URL: z.string(),
 	SENTRY_URL: z.string().optional(),
 	DISCORD_SERVER: z.string(),

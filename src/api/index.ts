@@ -5,6 +5,7 @@ import logger from "@/globals/logger"
 import database from "@/globals/database"
 import env from "@/globals/env"
 import { Runtime } from "@rjweb/runtime-node"
+import cache from "@/globals/cache"
 
 const startTime = performance.now()
 
@@ -26,6 +27,7 @@ export const server = new Server(Runtime, {
 ], {
 	appVersion: getVersion(),
   database,
+  cache,
   logger,
   env,
   join(...strings: (string | number | undefined | null | boolean)[]): string {
@@ -33,7 +35,7 @@ export const server = new Server(Runtime, {
 	}
 })
 
-export const globalAPIRouter = new server.FileLoader('/api')
+export const globalAPIRouter = new server.FileLoader('/')
   .load('api/routes/global', {
     fileBasedRouting: true
   })
@@ -49,13 +51,9 @@ server.http((ctr) => {
     .info()
 })
 
-server
-  .rateLimit('httpRequest', (ctr) => {
-    return ctr.status(ctr.$status.TOO_MANY_REQUESTS).print({ success: false, errors: ['You are making too many requests! Slow down.'] })
-  })
-  .rateLimit('wsMessage', (ctr) => {
-    return ctr.close(1008, 'You are making too many requests! Slow down.')
-  })
+server.rateLimit('httpRequest', (ctr) => {
+  return ctr.status(ctr.$status.TOO_MANY_REQUESTS).print({ success: false, errors: ['You are making too many requests! Slow down.'] })
+})
 
 server.error('httpRequest', (ctr, error) => {
   if (process.env.NODE_ENV === 'development') ctr.status(ctr.$status.INTERNAL_SERVER_ERROR).print({ success: false, errors: [error.toString()] })
